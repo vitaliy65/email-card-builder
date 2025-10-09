@@ -1,3 +1,10 @@
+import TextBlock from "@/components/blocks/TextBlock";
+import HeadingBlock from "@/components/blocks/HeadingBlock";
+import ButtonBlock from "@/components/blocks/ButtonBlock";
+import ImageBlock from "@/components/blocks/ImageBlock";
+import DividerBlock from "@/components/blocks/DividerBlock";
+import SpacerBlock from "@/components/blocks/SpacerBlock";
+import ColumnsBlock from "@/components/blocks/ColumnsBlock";
 import { BlockItem } from "@/types/block";
 import {
   Type,
@@ -16,14 +23,7 @@ export const blocks: BlockItem[] = [
     icon: Type,
     label: "Text",
     description: "Add paragraph text",
-    properties: {
-      backgroundColor: "#ffffff",
-      padding: "12px 0",
-      margin: "0",
-      fontSize: "16px",
-      fontWeight: 400,
-      color: "#222222",
-    },
+    canvasItem: TextBlock,
   },
   {
     id: "heading",
@@ -31,14 +31,7 @@ export const blocks: BlockItem[] = [
     icon: Heading1,
     label: "Heading",
     description: "Add a heading",
-    properties: {
-      backgroundColor: "#ffffff",
-      padding: "16px 0 8px 0",
-      margin: "0",
-      fontSize: "24px",
-      fontWeight: 700,
-      color: "#111111",
-    },
+    canvasItem: HeadingBlock,
   },
   {
     id: "button",
@@ -46,17 +39,7 @@ export const blocks: BlockItem[] = [
     icon: MousePointerClick,
     label: "Button",
     description: "Add a CTA button",
-    properties: {
-      backgroundColor: "#2563eb",
-      padding: "12px 24px",
-      margin: "8px 0",
-      borderRadius: "6px",
-      borderColor: "#2563eb",
-      borderWidth: "0",
-      fontSize: "16px",
-      fontWeight: 600,
-      color: "#ffffff",
-    },
+    canvasItem: ButtonBlock,
   },
   {
     id: "image",
@@ -64,14 +47,7 @@ export const blocks: BlockItem[] = [
     icon: ImageIcon,
     label: "Image",
     description: "Add an image",
-    properties: {
-      backgroundColor: "#ffffff",
-      padding: "8px 0",
-      margin: "0",
-      borderRadius: "0",
-      borderColor: "#e5e7eb",
-      borderWidth: "0",
-    },
+    canvasItem: ImageBlock,
   },
   {
     id: "divider",
@@ -79,13 +55,7 @@ export const blocks: BlockItem[] = [
     icon: Minus,
     label: "Divider",
     description: "Add a horizontal line",
-    properties: {
-      backgroundColor: "#e5e7eb",
-      padding: "0",
-      margin: "16px 0",
-      borderColor: "#e5e7eb",
-      borderWidth: "1px",
-    },
+    canvasItem: DividerBlock,
   },
   {
     id: "spacer",
@@ -93,11 +63,7 @@ export const blocks: BlockItem[] = [
     icon: Space,
     label: "Spacer",
     description: "Add vertical space",
-    properties: {
-      backgroundColor: "transparent",
-      padding: "0",
-      margin: "24px 0",
-    },
+    canvasItem: SpacerBlock,
   },
   {
     id: "columns",
@@ -105,10 +71,6 @@ export const blocks: BlockItem[] = [
     icon: Columns2,
     label: "Columns",
     description: "Add column layout",
-    properties: {
-      backgroundColor: "#ffffff",
-      padding: "0",
-      margin: "0",
-    },
+    canvasItem: ColumnsBlock,
   },
 ];
