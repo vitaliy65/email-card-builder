@@ -2,6 +2,7 @@ import type React from "react";
 import { Card } from "@/components/ui/card";
 import { blocks } from "@/data/blocks";
 import { Code, GripVertical } from "lucide-react";
+import Draggable from "../block-states/Draggable";
 
 export function ComponentsSidebar() {
   return (
@@ -15,31 +16,30 @@ export function ComponentsSidebar() {
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2 relative">
         {blocks.map((component) => (
-          <Card
-            key={component.id}
-            className="p-3 cursor-grab hover:bg-sidebar-accent transition-colors border-sidebar-border group"
-          >
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-10 h-10 rounded-md bg-sidebar-accent flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors">
-                <div className="h-5 w-5">
-                  <component.icon />
+          <Draggable key={component.id} id={component.id} className="w-full">
+            <Card className="p-3 cursor-grab hover:bg-sidebar-accent transition-colors border-sidebar-border group">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-md bg-sidebar-accent flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors">
+                  <div className="h-5 w-5">
+                    <component.icon />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-medium text-sidebar-foreground">
+                      {component.label}
+                    </h3>
+                    <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {component.description}
+                  </p>
                 </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-medium text-sidebar-foreground">
-                    {component.label}
-                  </h3>
-                  <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {component.description}
-                </p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </Draggable>
         ))}
       </div>
 

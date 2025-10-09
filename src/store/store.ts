@@ -2,15 +2,17 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import blocksReducer from "./slices/blocksSlice";
+import dragBlockReducer from "./slices/dragBlockSlice";
 
 const rootReducer = combineReducers({
   blocks: blocksReducer,
+  dragBlock: dragBlockReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["blocks"],
+  whitelist: ["blocks", "dragBlock"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
