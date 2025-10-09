@@ -10,8 +10,8 @@ Create a lightweight, drag-and-drop web editor for building responsive email car
 
 ### Phase 1: Project Setup (Week 1)
 
-- [+] Initialize Next.js + Tailwind CSS
-- [+] Setup Redux Toolkit + Redux Persist
+- [x] Initialize Next.js + Tailwind CSS
+- [x] Setup Redux Toolkit + Redux Persist
 - [ ] Add drag-and-drop (dnd-kit)
 - [ ] Implement basic Canvas and Text block
 
