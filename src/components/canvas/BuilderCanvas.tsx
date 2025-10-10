@@ -139,8 +139,7 @@ export function BuilderCanvas() {
               transition: "transform 0.2s",
             }}
           >
-            <Droppable
-              id="canvas"
+            <div
               className="bg-card border border-border h-full rounded-xl shadow-[0_4px_24px_0_rgba(0,0,0,0.08)]"
               style={{
                 width: currentSize.width,
@@ -158,7 +157,7 @@ export function BuilderCanvas() {
                   <DroppableBlock id={`droppable-block-1`} />
                 </div>
               </Card>
-            </Droppable>
+            </div>
           </div>
         </div>
       </div>
