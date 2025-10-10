@@ -12,12 +12,14 @@ interface BlocksState {
   availableBlocks: BlockItem[];
   canvasBlocks: CanvasBlock[]; // блоки на Canvas (в нужном порядке)
   selectedBlockId: string | null; // uuid выбранного блока
+  grabingBlockUUID: string | null;
 }
 
 const initialState: BlocksState = {
   availableBlocks: defaultBlocks,
   canvasBlocks: [],
   selectedBlockId: null,
+  grabingBlockUUID: null,
 };
 
 const blocksSlice = createSlice({
@@ -51,30 +53,31 @@ const blocksSlice = createSlice({
       }>
     ) => {
       const { block, previousBlockId, nextBlockId } = action.payload;
-      let index = -1;
 
+      // Если явно указан previousBlockId, вставь после него
       if (previousBlockId) {
-        const prevIndex = state.canvasBlocks.findIndex(
+        const prevIdx = state.canvasBlocks.findIndex(
           (b) => b.uuid === previousBlockId
         );
-        if (prevIndex !== -1) {
-          index = prevIndex + 1;
-        }
-      } else if (nextBlockId) {
-        const nextIndex = state.canvasBlocks.findIndex(
-          (b) => b.uuid === nextBlockId
-        );
-        if (nextIndex !== -1) {
-          index = nextIndex;
+        if (prevIdx !== -1) {
+          state.canvasBlocks.splice(prevIdx + 1, 0, block);
+          return;
         }
       }
 
-      if (index >= 0 && index <= state.canvasBlocks.length) {
-        state.canvasBlocks.splice(index, 0, block);
-      } else {
-        // если указанные блоки не найдены, добавляем в конец
-        state.canvasBlocks.push(block);
+      // Если previousBlockId нет, но есть nextBlockId — вставить перед ним
+      if (!previousBlockId && nextBlockId) {
+        const nextIdx = state.canvasBlocks.findIndex(
+          (b) => b.uuid === nextBlockId
+        );
+        if (nextIdx !== -1) {
+          state.canvasBlocks.splice(nextIdx, 0, block);
+          return;
+        }
       }
+
+      // Если оба не указаны или не найдены — вставить в конец
+      state.canvasBlocks.push(block);
     },
 
     // Изменить порядок блоков: переместить блок с fromIndex на toIndex
@@ -111,36 +114,43 @@ const blocksSlice = createSlice({
       );
       if (currentIdx === -1) return;
 
+      // Удаляем блок из текущей позиции
       const [block] = state.canvasBlocks.splice(currentIdx, 1);
 
-      let newIndex = -1;
-      if (previousBlockId) {
-        const prevIndex = state.canvasBlocks.findIndex(
-          (b) => b.uuid === previousBlockId
-        );
-        if (prevIndex !== -1) {
-          newIndex = prevIndex + 1;
-        }
-      } else if (nextBlockId) {
-        const nextIndex = state.canvasBlocks.findIndex(
+      // === Логика определения новой позиции ===
+
+      let insertIdx: number = state.canvasBlocks.length; // по умолчанию — в конец
+
+      // 1. Если оба previousBlockId и nextBlockId не заданы — переместить в конец
+      // 2. Если previousBlockId не задан (null) и nextBlockId задан — переместить в начало (вставить на 0 перед nextBlockId)
+      if (!previousBlockId && nextBlockId) {
+        const nextIdx = state.canvasBlocks.findIndex(
           (b) => b.uuid === nextBlockId
         );
-        if (nextIndex !== -1) {
-          newIndex = nextIndex;
+        insertIdx = nextIdx !== -1 ? nextIdx : 0;
+      }
+      // 3. Если previousBlockId задан — вставить после него
+      else if (previousBlockId) {
+        const prevIdx = state.canvasBlocks.findIndex(
+          (b) => b.uuid === previousBlockId
+        );
+        if (prevIdx !== -1) {
+          insertIdx = prevIdx + 1;
         }
       }
+      // 4. Если ни previousBlockId, ни nextBlockId не найдены или некорректны — оставить в конце
 
-      // Корректируем индекс если удаление блока уменьшило длину массива и он был после точки вставки
-      if (newIndex > currentIdx) {
-        newIndex = newIndex - 1;
+      // Корректировка, если элемент был выше целевой позиции (после удаления длина уменьшилась)
+      if (insertIdx > currentIdx) {
+        insertIdx = insertIdx;
       }
 
-      if (newIndex >= 0 && newIndex <= state.canvasBlocks.length) {
-        state.canvasBlocks.splice(newIndex, 0, block);
-      } else {
-        // если не найдено куда, добавляем в конец
-        state.canvasBlocks.push(block);
-      }
+      // Ограничиваем диапазон
+      if (insertIdx < 0) insertIdx = 0;
+      if (insertIdx > state.canvasBlocks.length)
+        insertIdx = state.canvasBlocks.length;
+
+      state.canvasBlocks.splice(insertIdx, 0, block);
     },
 
     // Обновить свойства блока на Canvas
@@ -182,6 +192,11 @@ const blocksSlice = createSlice({
       state.canvasBlocks = [];
       state.selectedBlockId = null;
     },
+
+    // Установить uuid блока, который захвачен (перетаскивается)
+    setGrabbingBlock: (state, action: PayloadAction<string | null>) => {
+      state.grabingBlockUUID = action.payload;
+    },
   },
 });
 
@@ -194,5 +209,6 @@ export const {
   removeBlock,
   selectBlock,
   resetCanvas,
+  setGrabbingBlock,
 } = blocksSlice.actions;
 export default blocksSlice.reducer;

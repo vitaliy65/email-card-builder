@@ -1,8 +1,6 @@
 "use client";
 import React, { ReactNode, RefObject } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import { setDraggingBlockId } from "@/store/slices/dragBlockSlice";
-import { useAppDispatch } from "@/store/hooks";
 import { Item } from "./ItemDrag";
 
 interface DraggableProps {
@@ -10,6 +8,8 @@ interface DraggableProps {
   children: ReactNode;
   className?: string;
   dragHandleRef?: RefObject<HTMLElement>;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }
 
 function Draggable({
@@ -17,23 +17,27 @@ function Draggable({
   children,
   className,
   dragHandleRef,
+  onDragStart,
+  onDragEnd,
 }: DraggableProps) {
-  const dispatch = useAppDispatch();
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: id,
   });
 
-  // Track dragging block in redux
+  // Следим за началом и концом перетаскивания через isDragging
+  const wasDragging = React.useRef(false);
   React.useEffect(() => {
-    if (isDragging) {
-      dispatch(setDraggingBlockId(id));
-    } else {
-      dispatch(setDraggingBlockId(null));
+    if (isDragging && !wasDragging.current) {
+      onDragStart?.();
+      wasDragging.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging, id, dispatch]);
+    if (!isDragging && wasDragging.current) {
+      onDragEnd?.();
+      wasDragging.current = false;
+    }
+  }, [isDragging, onDragStart, onDragEnd]);
 
-  // If dragHandleRef provided, initiate drag only from handle, NOT whole block
+  // Если есть handleRef, "слушаем" начало только с handle
   const patchedListeners = dragHandleRef?.current
     ? {
         onPointerDown: (e: React.PointerEvent) => {

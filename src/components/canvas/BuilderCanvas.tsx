@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import Droppable from "../block-states/Droppable";
 import DroppableBlock from "../blocks/DroppableBlock";
@@ -15,6 +15,7 @@ import SpacerBlock from "../blocks/SpacerBlock";
 import ColumnsBlock from "../blocks/ColumnsBlock";
 import { CanvasBlock } from "@/store/slices/blocksSlice";
 import BlockContainer from "../blocks/block-handlers/block-container";
+import ChangPosBlock from "../blocks/block-handlers/ChangPosBlock";
 
 const CANVAS_SIZES = [
   { label: "Desktop (600px)", value: "desktop", width: 600 },
@@ -68,7 +69,7 @@ export function BuilderCanvas() {
     }
 
     return (
-      <BlockContainer id={block.uuid}>
+      <BlockContainer uuid={block.uuid} id={block.id}>
         {BlockComponent ? <BlockComponent block={block} /> : null}
       </BlockContainer>
     );
@@ -147,12 +148,31 @@ export function BuilderCanvas() {
             >
               <Card className="bg-none border-none shadow-none">
                 <div className="bg-white h-full p-4">
+                  {/* Вставляем ChangPosBlock перед первым элементом (prevUuid всегда null) */}
+                  {canvasBlocks.length > 0 && (
+                    <ChangPosBlock
+                      prevUuid={null}
+                      nextUuid={canvasBlocks[0].uuid}
+                    />
+                  )}
                   {/* Отображаем реальные блоки */}
-                  {canvasBlocks.map((block) => (
-                    <div key={block.uuid} className="mb-2">
-                      {renderBlock(block)}
-                    </div>
-                  ))}
+                  {canvasBlocks.map((block, idx) => {
+                    const prevUuid =
+                      idx > 0 ? canvasBlocks[idx - 1].uuid : null;
+                    const nextUuid =
+                      idx < canvasBlocks.length - 1
+                        ? canvasBlocks[idx + 1].uuid
+                        : null;
+                    return (
+                      <Fragment key={block.uuid}>
+                        <div className="mb-2">{renderBlock(block)}</div>
+                        <ChangPosBlock
+                          prevUuid={prevUuid}
+                          nextUuid={nextUuid}
+                        />
+                      </Fragment>
+                    );
+                  })}
 
                   <DroppableBlock id={`droppable-block-1`} />
                 </div>

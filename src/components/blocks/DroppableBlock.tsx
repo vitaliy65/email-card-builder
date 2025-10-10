@@ -8,11 +8,13 @@ export default function DroppableBlock({ id }: { id: string }) {
   return (
     // The Droppable area receives a unique id and customized styles for appearance.
     <Droppable
-      className="bg-blue-200 flex justify-center items-center border border-blue-500 border-dashed rounded-sm p-2 w-full flex-1 h-[100px] mb-2"
+      className="bg-blue-200 flex justify-center items-center border-2 border-blue-500 border-dashed rounded-sm p-2 w-full flex-1 h-[100px] mb-2"
       id={id}
     >
       {/* PlusCircle icon represents the vacant area for dropping items */}
-      <PlusCircle className="text-blue-700" />
+      <div className="bg-blue-500 text-white p-4 rounded-xl">
+        <PlusCircle />
+      </div>
     </Droppable>
   );
 }

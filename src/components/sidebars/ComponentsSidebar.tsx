@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { blocks } from "@/data/blocks";
 import { Code, GripVertical } from "lucide-react";
 import Draggable from "../block-states/Draggable";
-import { Item } from "../block-states/ItemDrag";
 
 export function ComponentsSidebar() {
   return (

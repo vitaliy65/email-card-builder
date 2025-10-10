@@ -4,15 +4,21 @@ import React, { ReactNode, RefObject, useRef, useState } from "react";
 import MoveHandle from "./MoveHandle";
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
 import { TooltipContent } from "@radix-ui/react-tooltip";
-import { removeBlock } from "@/store/slices/blocksSlice";
+import { removeBlock, setGrabbingBlock } from "@/store/slices/blocksSlice";
 import { useAppDispatch } from "@/store/hooks";
 
+/**
+ * BlockContainer отслеживает начало и конец drag-and-drop,
+ * чтобы сохранять uuid перетаскиваемого блока в redux.
+ */
 export default function BlockContainer({
   children,
   id,
+  uuid,
 }: {
   children: ReactNode;
   id: string;
+  uuid: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const handleRef = useRef<HTMLDivElement>(null);
@@ -20,16 +26,30 @@ export default function BlockContainer({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    dispatch(removeBlock(id));
+    dispatch(removeBlock(uuid));
+  };
+
+  // Функция вызывается при начале drag (через Draggable)
+  const handleDragStart = () => {
+    dispatch(setGrabbingBlock(uuid));
+  };
+
+  // Функция вызывается при окончании drag (через Draggable)
+  // Добавляем задержку при завершении перетаскивания
+  const handleDragEnd = () => {
+    setTimeout(() => {
+      dispatch(setGrabbingBlock(null));
+    }, 150); // Задержка 150 мс
   };
 
   return (
-    // Pass dragHandleRef to Draggable so only the Move div allows dragging
+    // Pass dragHandleRef and drag event handlers to Draggable
     <Draggable
-      id={id}
+      id={id + "-" + uuid}
       className="relative group"
-      // Cast to unknown then HTMLElement to satisfy Draggable's RefObject<HTMLElement> requirement
       dragHandleRef={handleRef as RefObject<HTMLElement>}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <Tooltip>
         <TooltipTrigger asChild>
