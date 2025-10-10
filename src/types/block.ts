@@ -4,10 +4,14 @@ export interface BlockItem {
   icon: React.FC;
   label: string;
   description: string;
-  canvasItem: React.FC;
+  properties?: CanvasBlockItem;
 }
 
 export interface CanvasBlockItem {
+  columns?: number;
+  content?: string; // Добавьте это поле для текстового контента
+  src?: string; // Для изображений
+  alt?: string; // Для изображений
   backgroundColor?: string;
   padding?: string | number;
   margin?: string | number;

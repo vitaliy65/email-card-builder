@@ -9,8 +9,8 @@ export interface CanvasBlock extends BlockItem {
 }
 
 interface BlocksState {
-  availableBlocks: BlockItem[]; // все доступные блоки (константа)
-  canvasBlocks: CanvasBlock[]; // блоки на Canvas
+  availableBlocks: BlockItem[];
+  canvasBlocks: CanvasBlock[]; // блоки на Canvas (в нужном порядке)
   selectedBlockId: string | null; // uuid выбранного блока
 }
 
@@ -24,9 +24,40 @@ const blocksSlice = createSlice({
   name: "blocks",
   initialState,
   reducers: {
-    // Добавить новый блок на Canvas
-    addBlock: (state, action: PayloadAction<CanvasBlock>) => {
-      state.canvasBlocks.push(action.payload);
+    // Добавить новый блок на Canvas (в конец по умолчанию или по заданному индексу)
+    addBlock: (
+      state,
+      action: PayloadAction<{ block: CanvasBlock; index?: number }>
+    ) => {
+      const { block, index } = action.payload;
+      if (
+        typeof index === "number" &&
+        index >= 0 &&
+        index <= state.canvasBlocks.length
+      ) {
+        state.canvasBlocks.splice(index, 0, block);
+      } else {
+        state.canvasBlocks.push(block);
+      }
+    },
+
+    // Изменить порядок блоков: переместить блок с fromIndex на toIndex
+    moveBlock: (
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) => {
+      const { fromIndex, toIndex } = action.payload;
+      if (
+        fromIndex < 0 ||
+        fromIndex >= state.canvasBlocks.length ||
+        toIndex < 0 ||
+        toIndex >= state.canvasBlocks.length ||
+        fromIndex === toIndex
+      ) {
+        return;
+      }
+      const [removed] = state.canvasBlocks.splice(fromIndex, 1);
+      state.canvasBlocks.splice(toIndex, 0, removed);
     },
 
     // Обновить свойства блока на Canvas
@@ -71,6 +102,12 @@ const blocksSlice = createSlice({
   },
 });
 
-export const { addBlock, updateBlock, removeBlock, selectBlock, resetCanvas } =
-  blocksSlice.actions;
+export const {
+  addBlock,
+  moveBlock,
+  updateBlock,
+  removeBlock,
+  selectBlock,
+  resetCanvas,
+} = blocksSlice.actions;
 export default blocksSlice.reducer;

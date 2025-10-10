@@ -12,7 +12,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["blocks", "dragBlock"],
+  whitelist: ["dragBlock"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

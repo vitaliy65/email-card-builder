@@ -1,10 +1,3 @@
-import TextBlock from "@/components/blocks/TextBlock";
-import HeadingBlock from "@/components/blocks/HeadingBlock";
-import ButtonBlock from "@/components/blocks/ButtonBlock";
-import ImageBlock from "@/components/blocks/ImageBlock";
-import DividerBlock from "@/components/blocks/DividerBlock";
-import SpacerBlock from "@/components/blocks/SpacerBlock";
-import ColumnsBlock from "@/components/blocks/ColumnsBlock";
 import { BlockItem } from "@/types/block";
 import {
   Type,
@@ -23,7 +16,15 @@ export const blocks: BlockItem[] = [
     icon: Type,
     label: "Text",
     description: "Add paragraph text",
-    canvasItem: TextBlock,
+    properties: {
+      content: "Double-click to edit this text",
+      backgroundColor: "#ffffff",
+      padding: "12px 0",
+      margin: "0",
+      fontSize: "16px",
+      fontWeight: 400,
+      color: "#222222",
+    },
   },
   {
     id: "heading",
@@ -31,7 +32,15 @@ export const blocks: BlockItem[] = [
     icon: Heading1,
     label: "Heading",
     description: "Add a heading",
-    canvasItem: HeadingBlock,
+    properties: {
+      content: "Double-click to edit this heading",
+      backgroundColor: "#ffffff",
+      padding: "16px 0",
+      margin: "0",
+      fontSize: "28px",
+      fontWeight: 700,
+      color: "#111111",
+    },
   },
   {
     id: "button",
@@ -39,7 +48,19 @@ export const blocks: BlockItem[] = [
     icon: MousePointerClick,
     label: "Button",
     description: "Add a CTA button",
-    canvasItem: ButtonBlock,
+    properties: {
+      content: "Click Me",
+      backgroundColor: "#007bff",
+      padding: "12px 24px",
+      margin: "0",
+      fontSize: "18px",
+      fontWeight: 600,
+      color: "#ffffff",
+      borderRadius: "8px",
+      borderColor: "#007bff",
+      borderWidth: "1px",
+      borderStyle: "solid",
+    },
   },
   {
     id: "image",
@@ -47,7 +68,17 @@ export const blocks: BlockItem[] = [
     icon: ImageIcon,
     label: "Image",
     description: "Add an image",
-    canvasItem: ImageBlock,
+    properties: {
+      src: "https://placehold.co/400x200/png?text=Image",
+      alt: "Image",
+      backgroundColor: "#ffffff",
+      padding: "12px",
+      margin: "0",
+      borderRadius: "8px",
+      borderColor: "#e0e0e0",
+      borderWidth: "1px",
+      borderStyle: "solid",
+    },
   },
   {
     id: "divider",
@@ -55,7 +86,13 @@ export const blocks: BlockItem[] = [
     icon: Minus,
     label: "Divider",
     description: "Add a horizontal line",
-    canvasItem: DividerBlock,
+    properties: {
+      backgroundColor: "#e0e0e0",
+      padding: "12px 0",
+      margin: "0",
+      borderWidth: "1px",
+      borderStyle: "solid",
+    },
   },
   {
     id: "spacer",
@@ -63,7 +100,12 @@ export const blocks: BlockItem[] = [
     icon: Space,
     label: "Spacer",
     description: "Add vertical space",
-    canvasItem: SpacerBlock,
+    properties: {
+      height: "20px",
+      backgroundColor: "#ffffff",
+      padding: "0",
+      margin: "0",
+    },
   },
   {
     id: "columns",
@@ -71,6 +113,15 @@ export const blocks: BlockItem[] = [
     icon: Columns2,
     label: "Columns",
     description: "Add column layout",
-    canvasItem: ColumnsBlock,
+    properties: {
+      columns: 2,
+      backgroundColor: "#ffffff",
+      padding: "12px",
+      margin: "0",
+      borderRadius: "8px",
+      borderColor: "#e0e0e0",
+      borderWidth: "1px",
+      borderStyle: "solid",
+    },
   },
 ];

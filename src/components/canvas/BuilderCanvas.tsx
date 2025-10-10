@@ -1,9 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Plus } from "lucide-react";
 import Droppable from "../block-states/Droppable";
 import DroppableBlock from "../blocks/DroppableBlock";
+import { useAppSelector } from "@/store/hooks";
+
+// Import blocks from components/blocks
+import TextBlock from "../blocks/TextBlock";
+import HeadingBlock from "../blocks/HeadingBlock";
+import ButtonBlock from "../blocks/ButtonBlock";
+import ImageBlock from "../blocks/ImageBlock";
+import DividerBlock from "../blocks/DividerBlock";
+import SpacerBlock from "../blocks/SpacerBlock";
+import ColumnsBlock from "../blocks/ColumnsBlock";
+import { CanvasBlock } from "@/store/slices/blocksSlice";
+import BlockContainer from "../blocks/block-handlers/block-container";
 
 const CANVAS_SIZES = [
   { label: "Desktop (600px)", value: "desktop", width: 600 },
@@ -21,9 +32,57 @@ const ZOOM_LEVELS = [
 export function BuilderCanvas() {
   const [canvasSize, setCanvasSize] = useState(CANVAS_SIZES[0].value);
   const [zoom, setZoom] = useState(1);
+  const { canvasBlocks } = useAppSelector((state) => state.blocks);
 
   const currentSize =
     CANVAS_SIZES.find((s) => s.value === canvasSize) || CANVAS_SIZES[0];
+
+  const renderBlock = (block: CanvasBlock) => {
+    if (!block) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let BlockComponent: React.ComponentType<any> | null = null;
+    switch (block.type) {
+      case "text":
+        BlockComponent = TextBlock;
+        break;
+      case "heading":
+        BlockComponent = HeadingBlock;
+        break;
+      case "button":
+        BlockComponent = ButtonBlock;
+        break;
+      case "image":
+        BlockComponent = ImageBlock;
+        break;
+      case "divider":
+        BlockComponent = DividerBlock;
+        break;
+      case "spacer":
+        BlockComponent = SpacerBlock;
+        break;
+      case "columns":
+        BlockComponent = ColumnsBlock;
+        break;
+      default:
+        BlockComponent = null;
+    }
+
+    return (
+      <BlockContainer id={block.uuid}>
+        {BlockComponent ? <BlockComponent block={block} /> : null}
+      </BlockContainer>
+    );
+  };
+
+  useEffect(() => {}, [canvasBlocks.length]);
+
+  if (!canvasBlocks) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-36">
+        <div className="animate-spin rounded-full h-9 w-9 border-t-2 border-b-2 border-muted" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-background overflow-auto">
@@ -64,7 +123,7 @@ export function BuilderCanvas() {
 
           {/* Canvas footer info */}
           <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span>0 blocks</span>
+            <span>{canvasBlocks.length} blocks</span>
             <div className="h-3 w-px bg-border" />
             <span>{currentSize.width}px width</span>
             <div className="h-3 w-px bg-border" />
@@ -81,6 +140,7 @@ export function BuilderCanvas() {
             }}
           >
             <Droppable
+              id="canvas"
               className="bg-card border border-border h-full rounded-xl shadow-[0_4px_24px_0_rgba(0,0,0,0.08)]"
               style={{
                 width: currentSize.width,
@@ -88,9 +148,14 @@ export function BuilderCanvas() {
             >
               <Card className="bg-none border-none shadow-none">
                 <div className="bg-white h-full p-4">
-                  {[...Array(5)].map((_, i) => (
-                    <DroppableBlock key={i} id={`droppable-block-${i}`} />
+                  {/* Отображаем реальные блоки */}
+                  {canvasBlocks.map((block) => (
+                    <div key={block.uuid} className="mb-2">
+                      {renderBlock(block)}
+                    </div>
                   ))}
+
+                  <DroppableBlock id={`droppable-block-1`} />
                 </div>
               </Card>
             </Droppable>
