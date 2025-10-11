@@ -1,7 +1,6 @@
 "use client";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { Card } from "@/components/ui/card";
-import Droppable from "../block-states/Droppable";
 import DroppableBlock from "../blocks/DroppableBlock";
 import { useAppSelector } from "@/store/hooks";
 
@@ -75,8 +74,6 @@ export function BuilderCanvas() {
     );
   };
 
-  useEffect(() => {}, [canvasBlocks.length]);
-
   if (!canvasBlocks) {
     return (
       <div className="flex flex-1 items-center justify-center py-36">
@@ -148,17 +145,16 @@ export function BuilderCanvas() {
             >
               <Card className="bg-none border-none shadow-none">
                 <div className="bg-white h-full p-4">
-                  {/* Вставляем ChangPosBlock перед первым элементом (prevUuid всегда null) */}
+                  {/* ChangPosBlock перед первым элементом (prevUuid всегда null, nextUuid = первый block.uuid) */}
                   {canvasBlocks.length > 0 && (
                     <ChangPosBlock
                       prevUuid={null}
                       nextUuid={canvasBlocks[0].uuid}
                     />
                   )}
-                  {/* Отображаем реальные блоки */}
+                  {/* Блоки и ChangPosBlock между ними */}
                   {canvasBlocks.map((block, idx) => {
-                    const prevUuid =
-                      idx > 0 ? canvasBlocks[idx - 1].uuid : null;
+                    const prevUuid = canvasBlocks[idx].uuid;
                     const nextUuid =
                       idx < canvasBlocks.length - 1
                         ? canvasBlocks[idx + 1].uuid
@@ -173,8 +169,8 @@ export function BuilderCanvas() {
                       </Fragment>
                     );
                   })}
-
-                  <DroppableBlock id={`droppable-block-1`} />
+                  {/* DroppableBlock в самом конце */}
+                  <DroppableBlock id="droppable-block-1" />
                 </div>
               </Card>
             </div>
