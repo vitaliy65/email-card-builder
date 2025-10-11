@@ -1,10 +1,14 @@
+"use client";
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { blocks } from "@/data/blocks";
 import { Code, GripVertical } from "lucide-react";
 import Draggable from "../block-states/Draggable";
+import { setDraggingBlockId } from "@/store/slices/dragBlockSlice";
+import { useAppDispatch } from "@/store/hooks";
 
 export function ComponentsSidebar() {
+  const dispatch = useAppDispatch();
   return (
     <aside className="w-64 border-r border-border bg-sidebar flex flex-col">
       <div className="p-4 border-b border-sidebar-border">
@@ -18,7 +22,13 @@ export function ComponentsSidebar() {
 
       <div className="flex-1 overflow-y-auto p-3 space-y-2 relative">
         {blocks.map((component) => (
-          <Draggable key={component.id} id={component.id} className="w-full">
+          <Draggable
+            key={component.id}
+            id={component.id}
+            onDragStart={() => dispatch(setDraggingBlockId(component.id))}
+            onDragEnd={() => dispatch(setDraggingBlockId(null))}
+            className="w-full"
+          >
             <Card className="p-3 cursor-grab hover:bg-sidebar-accent transition-colors border-sidebar-border group">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 h-10 rounded-md bg-sidebar-accent flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors">
