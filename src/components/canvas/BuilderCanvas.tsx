@@ -1,78 +1,33 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Card } from "@/components/ui/card";
 import DroppableBlock from "../blocks/DroppableBlock";
 import { useAppSelector } from "@/store/hooks";
-
-// Import blocks from components/blocks
-import TextBlock from "../blocks/TextBlock";
-import HeadingBlock from "../blocks/HeadingBlock";
-import ButtonBlock from "../blocks/ButtonBlock";
-import ImageBlock from "../blocks/ImageBlock";
-import DividerBlock from "../blocks/DividerBlock";
-import SpacerBlock from "../blocks/SpacerBlock";
-import ColumnsBlock from "../blocks/ColumnsBlock";
-import { CanvasBlock } from "@/store/slices/blocksSlice";
-import BlockContainer from "../blocks/block-handlers/block-container";
 import ChangPosBlock from "../blocks/block-handlers/ChangPosBlock";
-
-const CANVAS_SIZES = [
-  { label: "Desktop (600px)", value: "desktop", width: 600 },
-  { label: "Mobile (320px)", value: "mobile", width: 320 },
-];
-
-const ZOOM_LEVELS = [
-  { label: "150%", value: 1.5 },
-  { label: "125%", value: 1.25 },
-  { label: "100%", value: 1 },
-  { label: "75%", value: 0.75 },
-  { label: "50%", value: 0.5 },
-];
+import { useBlockRenderer, useCanvasControls } from "@/hooks";
+import BlockContainer from "../blocks/block-handlers/block-container";
 
 export function BuilderCanvas() {
-  const [canvasSize, setCanvasSize] = useState(CANVAS_SIZES[0].value);
-  const [zoom, setZoom] = useState(1);
+  // Используем хук для управления canvas вместо локального состояния
+  const {
+    canvasSize,
+    zoom,
+    setCanvasSize,
+    setZoom,
+    getCanvasStyles,
+    currentSize,
+    CANVAS_SIZES,
+    ZOOM_LEVELS,
+  } = useCanvasControls({
+    persistSettings: true, // Сохранять настройки в localStorage
+    storageKey: "email-builder-canvas-settings",
+  });
+
+  // Используем хук для рендеринга блоков
+  const { renderBlocks } = useBlockRenderer();
+
+  // Получаем блоки из Redux
   const { canvasBlocks } = useAppSelector((state) => state.blocks);
-
-  const currentSize =
-    CANVAS_SIZES.find((s) => s.value === canvasSize) || CANVAS_SIZES[0];
-
-  const renderBlock = (block: CanvasBlock) => {
-    if (!block) return null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let BlockComponent: React.ComponentType<any> | null = null;
-    switch (block.type) {
-      case "text":
-        BlockComponent = TextBlock;
-        break;
-      case "heading":
-        BlockComponent = HeadingBlock;
-        break;
-      case "button":
-        BlockComponent = ButtonBlock;
-        break;
-      case "image":
-        BlockComponent = ImageBlock;
-        break;
-      case "divider":
-        BlockComponent = DividerBlock;
-        break;
-      case "spacer":
-        BlockComponent = SpacerBlock;
-        break;
-      case "columns":
-        BlockComponent = ColumnsBlock;
-        break;
-      default:
-        BlockComponent = null;
-    }
-
-    return (
-      <BlockContainer uuid={block.uuid} id={block.id}>
-        {BlockComponent ? <BlockComponent block={block} /> : null}
-      </BlockContainer>
-    );
-  };
 
   if (!canvasBlocks) {
     return (
@@ -131,11 +86,7 @@ export function BuilderCanvas() {
           {/* Email canvas */}
           <div
             className="w-full min-h-[700px] flex items-center justify-center py-4"
-            style={{
-              transform: `scale(${zoom})`,
-              transformOrigin: "top center",
-              transition: "transform 0.2s",
-            }}
+            style={getCanvasStyles()}
           >
             <div
               className="bg-card border border-border h-full rounded-xl shadow-[0_4px_24px_0_rgba(0,0,0,0.08)]"
@@ -145,23 +96,28 @@ export function BuilderCanvas() {
             >
               <Card className="bg-none border-none shadow-none">
                 <div className="bg-white h-full p-4">
-                  {/* ChangPosBlock перед первым элементом (prevUuid всегда null, nextUuid = первый block.uuid) */}
+                  {/* ChangPosBlock перед первым элементом */}
                   {canvasBlocks.length > 0 && (
                     <ChangPosBlock
                       prevUuid={null}
                       nextUuid={canvasBlocks[0].uuid}
                     />
                   )}
-                  {/* Блоки и ChangPosBlock между ними */}
-                  {canvasBlocks.map((block, idx) => {
-                    const prevUuid = canvasBlocks[idx].uuid;
+
+                  {/* Используем хук для рендеринга блоков */}
+                  {renderBlocks(canvasBlocks).map((renderedBlock, index) => {
+                    const block = canvasBlocks[index];
+                    const prevUuid = canvasBlocks[index].uuid;
                     const nextUuid =
-                      idx < canvasBlocks.length - 1
-                        ? canvasBlocks[idx + 1].uuid
+                      index < canvasBlocks.length - 1
+                        ? canvasBlocks[index + 1].uuid
                         : null;
+
                     return (
                       <Fragment key={block.uuid}>
-                        <div className="mb-2">{renderBlock(block)}</div>
+                        <BlockContainer uuid={block.uuid} id={block.id}>
+                          {renderedBlock}
+                        </BlockContainer>
                         <ChangPosBlock
                           prevUuid={prevUuid}
                           nextUuid={nextUuid}
@@ -169,6 +125,7 @@ export function BuilderCanvas() {
                       </Fragment>
                     );
                   })}
+
                   {/* DroppableBlock в самом конце */}
                   <DroppableBlock id="droppable-block-1" />
                 </div>

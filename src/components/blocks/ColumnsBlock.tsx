@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CanvasBlockItem } from "@/types/block";
+import DroppableBlock from "./DroppableBlock";
 
 interface Column {
   id: string;
@@ -15,11 +16,11 @@ interface ColumnsBlockProps {
 }
 
 const defaultColumnStyles: CanvasBlockItem = {
-  padding: "8px",
-  backgroundColor: "#f9fafb",
-  borderRadius: "6px",
+  padding: "0px",
+  backgroundColor: "#ffffff",
+  borderRadius: "0px",
   borderColor: "#e5e7eb",
-  borderWidth: "1px",
+  borderWidth: "0px",
   borderStyle: "solid",
 };
 
@@ -31,8 +32,8 @@ const defaultStyles: CanvasBlockItem = {
 
 export default function ColumnsBlock({
   columns = [
-    { id: "col-1", content: <div>Column 1</div> },
-    { id: "col-2", content: <div>Column 2</div> },
+    { id: "col-1", content: <DroppableBlock id={"col-1"} /> },
+    { id: "col-2", content: <DroppableBlock id={"col-2"} /> },
   ],
   styles = defaultStyles,
 }: ColumnsBlockProps) {

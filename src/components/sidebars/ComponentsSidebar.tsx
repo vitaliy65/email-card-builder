@@ -52,22 +52,6 @@ export function ComponentsSidebar() {
           </Draggable>
         ))}
       </div>
-
-      <div className="p-4 border-t border-sidebar-border">
-        <Card className="p-3 bg-primary/5 border-primary/20">
-          <div className="flex items-start gap-2">
-            <Code className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-            <div>
-              <h4 className="text-xs font-medium text-foreground">
-                Custom HTML
-              </h4>
-              <p className="text-xs text-muted-foreground mt-1">
-                Add your own HTML blocks
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
     </aside>
   );
 }
