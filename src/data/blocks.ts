@@ -1,23 +1,28 @@
-import { BlockItem } from "@/types/block";
 import {
-  Type,
-  Heading1,
-  MousePointerClick,
-  ImageIcon,
-  Minus,
-  Space,
-  Columns2,
-} from "lucide-react";
+  BlockItem,
+  TextBlockItem,
+  HeadingBlockItem,
+  ButtonBlockItem,
+  ImageBlockItem,
+  ColumnsBlockItem,
+  BlockTypes,
+} from "@/types/block";
 
-export const blocks: BlockItem[] = [
-  {
-    id: "text",
-    type: "text",
-    icon: Type,
-    label: "Text",
-    description: "Add paragraph text",
+// Все дефолты блоков в одном массиве/объекте для быстрого поиска по типу
+export const blockDefaults: Record<
+  BlockTypes,
+  | BlockItem
+  | TextBlockItem
+  | HeadingBlockItem
+  | ButtonBlockItem
+  | ImageBlockItem
+  | ColumnsBlockItem
+> = {
+  [BlockTypes.text]: {
+    id: BlockTypes.text,
+    type: BlockTypes.text,
+    content: "Double-click to edit this text",
     properties: {
-      content: "Double-click to edit this text",
       backgroundColor: "#ffffff",
       padding: "12px 0",
       margin: "0",
@@ -25,15 +30,12 @@ export const blocks: BlockItem[] = [
       fontWeight: 400,
       color: "#222222",
     },
-  },
-  {
-    id: "heading",
-    type: "heading",
-    icon: Heading1,
-    label: "Heading",
-    description: "Add a heading",
+  } as TextBlockItem,
+  [BlockTypes.heading]: {
+    id: BlockTypes.heading,
+    type: BlockTypes.heading,
+    content: "Double-click to edit this text",
     properties: {
-      content: "Double-click to edit this heading",
       backgroundColor: "#ffffff",
       padding: "16px 0",
       margin: "0",
@@ -41,15 +43,12 @@ export const blocks: BlockItem[] = [
       fontWeight: 700,
       color: "#111111",
     },
-  },
-  {
-    id: "button",
-    type: "button",
-    icon: MousePointerClick,
-    label: "Button",
-    description: "Add a CTA button",
+  } as HeadingBlockItem,
+  [BlockTypes.button]: {
+    id: BlockTypes.button,
+    type: BlockTypes.button,
+    content: "Click Me",
     properties: {
-      content: "Click Me",
       backgroundColor: "#007bff",
       padding: "12px 24px",
       margin: "0",
@@ -61,16 +60,13 @@ export const blocks: BlockItem[] = [
       borderWidth: "1px",
       borderStyle: "solid",
     },
-  },
-  {
-    id: "image",
-    type: "image",
-    icon: ImageIcon,
-    label: "Image",
-    description: "Add an image",
+  } as ButtonBlockItem,
+  [BlockTypes.image]: {
+    id: BlockTypes.image,
+    type: BlockTypes.image,
+    src: "https://placehold.co/400x200/png?text=Image",
+    alt: "Image",
     properties: {
-      src: "https://placehold.co/400x200/png?text=Image",
-      alt: "Image",
       backgroundColor: "#ffffff",
       padding: "12px",
       margin: "0",
@@ -79,13 +75,10 @@ export const blocks: BlockItem[] = [
       borderWidth: "1px",
       borderStyle: "solid",
     },
-  },
-  {
-    id: "divider",
-    type: "divider",
-    icon: Minus,
-    label: "Divider",
-    description: "Add a horizontal line",
+  } as ImageBlockItem,
+  [BlockTypes.divider]: {
+    id: BlockTypes.divider,
+    type: BlockTypes.divider,
     properties: {
       backgroundColor: "#e0e0e0",
       padding: "12px 0",
@@ -93,28 +86,48 @@ export const blocks: BlockItem[] = [
       borderWidth: "1px",
       borderStyle: "solid",
     },
-  },
-  {
-    id: "spacer",
-    type: "spacer",
-    icon: Space,
-    label: "Spacer",
-    description: "Add vertical space",
+  } as BlockItem,
+  [BlockTypes.spacer]: {
+    id: BlockTypes.spacer,
+    type: BlockTypes.spacer,
     properties: {
-      height: "20px",
+      height: "24px",
       backgroundColor: "#ffffff",
       padding: "0",
       margin: "0",
     },
-  },
-  {
-    id: "columns",
-    type: "columns",
-    icon: Columns2,
-    label: "Columns",
-    description: "Add column layout",
+  } as BlockItem,
+  [BlockTypes.columns]: {
+    id: BlockTypes.columns,
+    type: BlockTypes.columns,
+    columnsCount: 2,
+    columns: [
+      {
+        id: "col-1",
+        content: null,
+        styles: {
+          padding: "0px",
+          backgroundColor: "#ffffff",
+          borderRadius: "0px",
+          borderColor: "#e5e7eb",
+          borderWidth: "0px",
+          borderStyle: "solid",
+        },
+      },
+      {
+        id: "col-2",
+        content: null,
+        styles: {
+          padding: "0px",
+          backgroundColor: "#ffffff",
+          borderRadius: "0px",
+          borderColor: "#e5e7eb",
+          borderWidth: "0px",
+          borderStyle: "solid",
+        },
+      },
+    ],
     properties: {
-      columns: 2,
       backgroundColor: "#ffffff",
       padding: "12px",
       margin: "0",
@@ -123,5 +136,24 @@ export const blocks: BlockItem[] = [
       borderWidth: "1px",
       borderStyle: "solid",
     },
-  },
-];
+  } as ColumnsBlockItem,
+};
+
+// Экспорт каждого дефолта по-отдельности, если это нужно где-то еще
+export const TextBlockDefault = blockDefaults[BlockTypes.text] as TextBlockItem;
+export const HeadingBlockDefault = blockDefaults[
+  BlockTypes.heading
+] as HeadingBlockItem;
+export const ButtonBlockDefault = blockDefaults[
+  BlockTypes.button
+] as ButtonBlockItem;
+export const ImageBlockDefault = blockDefaults[
+  BlockTypes.image
+] as ImageBlockItem;
+export const DividerBlockDefault = blockDefaults[
+  BlockTypes.divider
+] as BlockItem;
+export const SpacerBlockDefault = blockDefaults[BlockTypes.spacer] as BlockItem;
+export const ColumnBlockDefault = blockDefaults[
+  BlockTypes.columns
+] as ColumnsBlockItem;

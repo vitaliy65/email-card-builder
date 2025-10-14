@@ -1,7 +1,6 @@
 // store/blocksSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BlockItem } from "@/types/block";
-import { blocks as defaultBlocks } from "@/data/blocks";
 
 // Расширяем BlockItem для блоков на Canvas
 export interface CanvasBlock extends BlockItem {
@@ -9,16 +8,16 @@ export interface CanvasBlock extends BlockItem {
 }
 
 interface BlocksState {
-  availableBlocks: BlockItem[];
   canvasBlocks: CanvasBlock[]; // блоки на Canvas (в нужном порядке)
   selectedBlockId: string | null; // uuid выбранного блока
   grabingBlockUUID: string | null;
+  hoveredBlockId: string | null;
 }
 
 const initialState: BlocksState = {
-  availableBlocks: defaultBlocks,
   canvasBlocks: [],
   selectedBlockId: null,
+  hoveredBlockId: null,
   grabingBlockUUID: null,
 };
 
@@ -197,6 +196,20 @@ const blocksSlice = createSlice({
     setGrabbingBlock: (state, action: PayloadAction<string | null>) => {
       state.grabingBlockUUID = action.payload;
     },
+
+    setHoveredBlockId: (state, action: PayloadAction<{ id: string }>) => {
+      const { id } = action.payload;
+      state.hoveredBlockId = id;
+    },
+
+    updateCanvasColumnBlock: (
+      state,
+      action: PayloadAction<{ block: CanvasBlock; columnIndex?: string }>
+    ) => {
+      const { block, columnIndex } = action.payload;
+
+      state.canvasBlocks.find((block) => {});
+    },
   },
 });
 
@@ -210,5 +223,7 @@ export const {
   selectBlock,
   resetCanvas,
   setGrabbingBlock,
+  updateCanvasColumnBlock,
+  setHoveredBlockId,
 } = blocksSlice.actions;
 export default blocksSlice.reducer;

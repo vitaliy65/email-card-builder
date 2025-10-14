@@ -5,13 +5,13 @@ import React from "react";
 import { Item } from "./ItemDrag";
 import { Card } from "../ui/card";
 import { GripVertical } from "lucide-react";
-import { blocks } from "@/data/blocks";
+import { blockPreviews } from "@/data/blocksPreview";
 
 export default function DragBlockOverlay() {
   const activeId = useAppSelector((s) => s.dragBlock.draggingBlockId);
 
   // Find the active component info directly
-  const componentInfo = blocks.find((block) => block.id === activeId);
+  const componentInfo = blockPreviews.find((block) => block.id === activeId);
 
   if (!componentInfo) return null;
 

@@ -1,25 +1,18 @@
 "use client";
 
 import React from "react";
-import { CanvasBlockItem } from "@/types/block";
-
-interface SpacerBlockProps {
-  styles?: CanvasBlockItem;
-}
-
-const defaultStyles: CanvasBlockItem = {
-  height: "24px",
-  width: "100%",
-};
+import { BlockItem } from "@/types/block";
+import { SpacerBlockDefault } from "@/data/blocks";
 
 export default function SpacerBlock({
-  styles = defaultStyles,
-}: SpacerBlockProps) {
+  props = SpacerBlockDefault,
+}: {
+  props: BlockItem;
+}) {
   return (
     <div
       style={{
-        height: styles.height,
-        width: styles.width,
+        ...props.properties,
       }}
       aria-hidden="true"
     />

@@ -1,17 +1,21 @@
+export enum BlockTypes {
+  text = "text",
+  heading = "heading",
+  button = "button",
+  image = "image",
+  divider = "divider",
+  spacer = "spacer",
+  columns = "columns",
+}
+
 export interface BlockItem {
   id: string;
   type: string;
-  icon: React.FC;
-  label: string;
-  description: string;
   properties?: CanvasBlockItem;
 }
 
+// Базовый тип для стилей и общих свойств блока
 export interface CanvasBlockItem {
-  columns?: number;
-  content?: string; // Добавьте это поле для текстового контента
-  src?: string; // Для изображений
-  alt?: string; // Для изображений
   backgroundColor?: string;
   padding?: string | number;
   margin?: string | number;
@@ -26,4 +30,47 @@ export interface CanvasBlockItem {
   height?: string | number;
   display?: string;
   gap?: string | number;
+}
+
+// Текстовый блок
+export interface TextBlockItem extends BlockItem {
+  id: BlockTypes.text;
+  type: BlockTypes.text;
+  content?: string;
+}
+
+// Заголовок
+export interface HeadingBlockItem extends BlockItem {
+  id: BlockTypes.heading;
+  type: BlockTypes.heading;
+  content?: string;
+}
+
+// Кнопка
+export interface ButtonBlockItem extends BlockItem {
+  id: BlockTypes.button;
+  type: BlockTypes.button;
+  content?: string;
+}
+
+// Изображение
+export interface ImageBlockItem extends BlockItem {
+  id: BlockTypes.image;
+  type: BlockTypes.image;
+  src?: string;
+  alt?: string;
+}
+
+// Columns
+export interface ColumnsBlockItem extends BlockItem {
+  id: BlockTypes.columns;
+  type: BlockTypes.columns;
+  columnsCount?: number;
+  columns?: Column[];
+}
+
+export interface Column {
+  id: string;
+  content?: React.ReactNode;
+  styles?: CanvasBlockItem;
 }

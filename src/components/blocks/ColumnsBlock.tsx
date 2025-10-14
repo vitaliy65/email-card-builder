@@ -1,77 +1,48 @@
 "use client";
 
-import React from "react";
-import { CanvasBlockItem } from "@/types/block";
+import React, { useCallback } from "react";
+import { ColumnsBlockItem } from "@/types/block";
+import { ColumnBlockDefault } from "@/data/blocks";
 import DroppableBlock from "./DroppableBlock";
-
-interface Column {
-  id: string;
-  content?: React.ReactNode;
-  styles?: CanvasBlockItem;
-}
-
-interface ColumnsBlockProps {
-  columns?: Column[];
-  styles?: CanvasBlockItem;
-}
-
-const defaultColumnStyles: CanvasBlockItem = {
-  padding: "0px",
-  backgroundColor: "#ffffff",
-  borderRadius: "0px",
-  borderColor: "#e5e7eb",
-  borderWidth: "0px",
-  borderStyle: "solid",
-};
-
-const defaultStyles: CanvasBlockItem = {
-  display: "flex",
-  gap: "16px",
-  width: "100%",
-};
+// import { useAppDispatch } from "@/store/hooks";
+// import { setHoveredBlockId } from "@/store/slices/blocksSlice";
 
 export default function ColumnsBlock({
-  columns = [
-    { id: "col-1", content: <DroppableBlock id={"col-1"} /> },
-    { id: "col-2", content: <DroppableBlock id={"col-2"} /> },
-  ],
-  styles = defaultStyles,
-}: ColumnsBlockProps) {
+  props = ColumnBlockDefault,
+}: {
+  props: ColumnsBlockItem;
+}) {
+  // const dispatch = useAppDispatch();
+  const generateUniqId = useCallback((id: string): string => {
+    const newId = id + "-" + Date.now();
+    return newId;
+  }, []);
+
   return (
     <div
       style={{
-        display: styles.display ?? "flex",
-        gap: styles.gap ?? "16px",
-        width: styles.width ?? "100%",
-        ...styles,
+        display: "grid",
+        gridTemplateColumns: `repeat(${props.columnsCount}, 1fr)`,
       }}
+      // onMouseEnter={()=>dispatch(setHoveredBlockId(id))}
     >
-      {columns.map((col) => (
-        <div
-          key={col.id}
-          style={{
-            flex: 1,
-            padding: col.styles?.padding ?? defaultColumnStyles.padding,
-            backgroundColor:
-              col.styles?.backgroundColor ??
-              defaultColumnStyles.backgroundColor,
-            borderRadius:
-              col.styles?.borderRadius ?? defaultColumnStyles.borderRadius,
-            borderColor:
-              col.styles?.borderColor ?? defaultColumnStyles.borderColor,
-            borderWidth:
-              col.styles?.borderWidth ?? defaultColumnStyles.borderWidth,
-            borderStyle:
-              col.styles?.borderStyle ??
-              (col.styles?.borderWidth
-                ? "solid"
-                : defaultColumnStyles.borderStyle),
-            ...col.styles,
-          }}
-        >
-          {col.content}
-        </div>
-      ))}
+      {props.columns?.map((col) => {
+        const uniqId = generateUniqId(col.id);
+        return (
+          <div
+            key={uniqId}
+            style={{
+              ...col.styles,
+            }}
+          >
+            {col.content ? (
+              col.content
+            ) : (
+              <DroppableBlock id={`${uniqId}`}></DroppableBlock>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

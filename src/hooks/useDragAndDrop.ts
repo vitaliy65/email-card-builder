@@ -1,13 +1,15 @@
 "use client";
 import { useCallback } from "react";
-import { DragEndEvent } from "@dnd-kit/core";
+import { Active, DragEndEvent, Over } from "@dnd-kit/core";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addBlock,
   setGrabbingBlock,
   CanvasBlock,
+  updateCanvasColumnBlock,
 } from "@/store/slices/blocksSlice";
-import { blocks } from "@/data/blocks";
+import { blockDefaults } from "@/data/blocks";
+import { BlockTypes, BlockItem } from "@/types/block";
 
 export const useDragAndDrop = () => {
   const dispatch = useAppDispatch();
@@ -16,9 +18,10 @@ export const useDragAndDrop = () => {
     (state) => state.blocks.grabingBlockUUID
   );
 
-  // Создание нового блока для canvas на основе шаблона
+  // Создание нового блока для canvas на основе шаблона из blockDefaults
   const createCanvasBlock = useCallback(
-    (blockTemplate: (typeof blocks)[0]): CanvasBlock => {
+    (blockType: BlockTypes): CanvasBlock => {
+      const blockTemplate = blockDefaults[blockType] as BlockItem;
       const timestamp = Date.now();
       const randomSuffix = Math.random().toString(36).substring(2, 8);
 
@@ -26,44 +29,58 @@ export const useDragAndDrop = () => {
         ...blockTemplate,
         uuid: `${blockTemplate.id}-${timestamp}-${randomSuffix}`,
         properties: {
-          backgroundColor: "#ffffff",
-          padding: "12px",
-          margin: "0",
-          // Добавляем контент по умолчанию в зависимости от типа блока
-          content: getDefaultContent(blockTemplate.type),
-          src:
-            blockTemplate.type === "image"
-              ? "https://placehold.co/400x200/png?text=Image"
-              : undefined,
-          alt: blockTemplate.type === "image" ? "Image" : undefined,
           ...blockTemplate.properties,
         },
-      };
+      } as CanvasBlock;
     },
     []
   );
 
-  // Получение контента по умолчанию для разных типов блоков
-  const getDefaultContent = useCallback((blockType: string): string => {
-    switch (blockType) {
-      case "text":
-        return "Double-click to edit this text";
-      case "heading":
-        return "Double-click to edit this heading";
-      case "button":
-        return "Click Me";
-      case "divider":
-        return "";
-      case "spacer":
-        return "";
-      case "image":
-        return "";
-      case "columns":
-        return "";
-      default:
-        return "";
-    }
+  const createColBlock = useCallback((blockType: BlockTypes): CanvasBlock => {
+    const blockTemplate = blockDefaults[blockType] as BlockItem;
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+
+    return {
+      ...blockTemplate,
+      uuid: `${blockTemplate.id}-${timestamp}-${randomSuffix}`,
+      properties: {
+        ...blockTemplate.properties,
+      },
+    } as CanvasBlock;
   }, []);
+
+  const handleUpdateColumn = useCallback(
+    ({
+      over,
+      draggedBlockType,
+    }: {
+      over: Over;
+      draggedBlockType: BlockTypes;
+    }) => {
+      if (over.id.toString().startsWith("col-")) {
+        try {
+          const columnIndex = over.id.toString();
+          console.log(columnIndex);
+          // const updatedColumnBlock = createColBlock(draggedBlockType);
+
+          // dispatch(
+          //   updateCanvasColumnBlock({
+          //     block: updatedColumnBlock,
+          //     columnIndex: columnIndex,
+          //   })
+          // );
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          console.error(
+            "An error occurred while creating a new block: ",
+            err.message
+          );
+        }
+      }
+    },
+    []
+  );
 
   // Обработка завершения перетаскивания
   const handleDragEnd = useCallback(
@@ -71,62 +88,57 @@ export const useDragAndDrop = () => {
       const { active, over } = event;
 
       if (!over) {
-        console.log("Drag ended without valid drop target");
+        // Drag ended without valid drop target
         return;
       }
 
-      // Найти блок по ID в доступных блоках
-      const draggedBlock = blocks.find((block) => block.id === active.id);
+      // Определить тип блока из BlockTypes
+      const draggedBlockType = Object.values(BlockTypes).find(
+        (type) => type === active.id
+      ) as BlockTypes | undefined;
 
-      if (!draggedBlock) {
-        console.warn(
-          `Block with id "${active.id}" not found in available blocks`
-        );
+      if (!draggedBlockType) {
+        // Block type not found in BlockTypes
         return;
       }
+
+      handleUpdateColumn({ over, draggedBlockType });
 
       // Проверяем, что элемент сброшен в droppable область
       if (over.id.toString().startsWith("droppable-block-")) {
         try {
-          // Создать новый экземпляр блока для canvas
-          const newCanvasBlock = createCanvasBlock(draggedBlock);
+          const newCanvasBlock = createCanvasBlock(draggedBlockType);
 
-          // Добавить блок в конец списка
           dispatch(
             addBlock({
               block: newCanvasBlock,
               index: canvasBlocks.length,
             })
           );
-
-          console.log(
-            `Added new block: ${draggedBlock.label} (${newCanvasBlock.uuid})`
-          );
         } catch (error) {
-          console.error("Error creating new block:", error);
+          const err = error instanceof Error ? error : new Error(String(error));
+          console.error(
+            "An error occurred while creating a new block: ",
+            err.message
+          );
         }
-      } else {
-        console.log(`Drop target "${over.id}" is not a valid droppable area`);
       }
     },
-    [dispatch, canvasBlocks.length, createCanvasBlock]
+    [dispatch, canvasBlocks.length, createCanvasBlock, handleUpdateColumn]
   );
 
   // Начало перетаскивания блока
   const handleDragStart = useCallback(
     (uuid: string) => {
       dispatch(setGrabbingBlock(uuid));
-      console.log(`Started dragging block: ${uuid}`);
     },
     [dispatch]
   );
 
   // Завершение перетаскивания блока
   const handleDragEndBlock = useCallback(() => {
-    // Добавляем небольшую задержку для плавности анимации
     setTimeout(() => {
       dispatch(setGrabbingBlock(null));
-      console.log("Finished dragging block");
     }, 150);
   }, [dispatch]);
 
@@ -153,56 +165,23 @@ export const useDragAndDrop = () => {
 
   // Валидация возможности добавления блока
   const canAddBlock = useCallback(
-    (blockType: string) => {
-      // Здесь можно добавить логику ограничений
-      // Например, максимальное количество блоков определенного типа
+    (blockType: BlockTypes) => {
       const blockCount = canvasBlocks.filter(
         (block) => block.type === blockType
       ).length;
-
-      // Пример ограничения: максимум 10 блоков одного типа
       return blockCount < 10;
     },
     [canvasBlocks]
   );
 
-  // Получение статистики по блокам
-  const getBlocksStats = useCallback(() => {
-    const stats = blocks.map((template) => {
-      const count = canvasBlocks.filter(
-        (block) => block.type === template.type
-      ).length;
-      return {
-        type: template.type,
-        label: template.label,
-        count,
-        maxCount: 10, // Можно сделать настраиваемым
-        canAdd: count < 10,
-      };
-    });
-
-    return {
-      total: canvasBlocks.length,
-      byType: stats,
-      maxTotal: 50, // Можно сделать настраиваемым
-      canAddMore: canvasBlocks.length < 50,
-    };
-  }, [canvasBlocks]);
-
   return {
-    // Состояние
     grabingBlockUUID,
-
-    // Обработчики событий
     handleDragEnd,
     handleDragStart,
     handleDragEndBlock,
-
-    // Утилиты
     isDragging,
     getDragInfo,
     canAddBlock,
-    getBlocksStats,
     createCanvasBlock,
   };
 };
