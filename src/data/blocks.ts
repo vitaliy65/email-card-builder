@@ -100,33 +100,16 @@ export const blockDefaults: Record<
   [BlockTypes.columns]: {
     id: BlockTypes.columns,
     type: BlockTypes.columns,
-    columnsCount: 2,
-    columns: [
-      {
-        id: "col-1",
-        content: null,
-        styles: {
-          padding: "0px",
-          backgroundColor: "#ffffff",
-          borderRadius: "0px",
-          borderColor: "#e5e7eb",
-          borderWidth: "0px",
-          borderStyle: "solid",
-        },
-      },
-      {
-        id: "col-2",
-        content: null,
-        styles: {
-          padding: "0px",
-          backgroundColor: "#ffffff",
-          borderRadius: "0px",
-          borderColor: "#e5e7eb",
-          borderWidth: "0px",
-          borderStyle: "solid",
-        },
-      },
-    ],
+    columnsCount: 0,
+    columns: [],
+    gap: "12px",
+    gridProps: {
+      display: "grid",
+      zIndex: "10",
+      gap: "12px",
+      background: "gray",
+      minHeight: "100px",
+    },
     properties: {
       backgroundColor: "#ffffff",
       padding: "12px",

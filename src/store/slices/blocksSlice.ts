@@ -1,6 +1,6 @@
 // store/blocksSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BlockItem } from "@/types/block";
+import { BlockItem, ColumnsBlockItem } from "@/types/block";
 
 // Расширяем BlockItem для блоков на Canvas
 export interface CanvasBlock extends BlockItem {
@@ -197,7 +197,10 @@ const blocksSlice = createSlice({
       state.grabingBlockUUID = action.payload;
     },
 
-    setHoveredBlockId: (state, action: PayloadAction<{ id: string }>) => {
+    setHoveredBlockId: (
+      state,
+      action: PayloadAction<{ id: string | null }>
+    ) => {
       const { id } = action.payload;
       state.hoveredBlockId = id;
     },
@@ -208,7 +211,11 @@ const blocksSlice = createSlice({
     ) => {
       const { block, columnIndex } = action.payload;
 
-      state.canvasBlocks.find((block) => {});
+      const columnBlock = state.canvasBlocks.find(
+        (block) => block.uuid === state.hoveredBlockId
+      ) as ColumnsBlockItem;
+
+      // columnBlock.columns
     },
   },
 });

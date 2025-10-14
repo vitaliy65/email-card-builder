@@ -67,6 +67,40 @@ export interface ColumnsBlockItem extends BlockItem {
   type: BlockTypes.columns;
   columnsCount?: number;
   columns?: Column[];
+  gap: `${number}px`;
+  gridProps: GridProperties;
+}
+
+export interface GridProperties {
+  display?: string;
+  gridTemplateColumns?: string;
+  gridTemplateRows?: string;
+  gridColumnGap?: string;
+  gridRowGap?: string;
+  gridAutoFlow?: string;
+  justifyItems?: string;
+  alignItems?: string;
+  justifyContent?: string;
+  alignContent?: string;
+  placeItems?: string;
+  placeContent?: string;
+  gap?: string;
+  background?: string;
+  zIndex?: string | number;
+  width?: string | number;
+  height?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  minHeight?: string | number;
+  maxHeight?: string | number;
+  borderRadius?: string | number;
+  borderColor?: string;
+  borderWidth?: string | number;
+  borderStyle?: string;
+  padding?: string;
+  margin?: string;
+  boxShadow?: string;
+  // Add more as needed, for now these cover typical grid and some common container props
 }
 
 export interface Column {

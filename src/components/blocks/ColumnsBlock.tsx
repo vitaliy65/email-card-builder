@@ -1,48 +1,48 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React from "react";
 import { ColumnsBlockItem } from "@/types/block";
 import { ColumnBlockDefault } from "@/data/blocks";
 import DroppableBlock from "./DroppableBlock";
-// import { useAppDispatch } from "@/store/hooks";
-// import { setHoveredBlockId } from "@/store/slices/blocksSlice";
 
 export default function ColumnsBlock({
   props = ColumnBlockDefault,
 }: {
   props: ColumnsBlockItem;
 }) {
-  // const dispatch = useAppDispatch();
-  const generateUniqId = useCallback((id: string): string => {
-    const newId = id + "-" + Date.now();
-    return newId;
-  }, []);
-
   return (
     <div
       style={{
-        display: "grid",
         gridTemplateColumns: `repeat(${props.columnsCount}, 1fr)`,
+        ...props.gridProps,
       }}
-      // onMouseEnter={()=>dispatch(setHoveredBlockId(id))}
     >
-      {props.columns?.map((col) => {
-        const uniqId = generateUniqId(col.id);
-        return (
-          <div
-            key={uniqId}
-            style={{
-              ...col.styles,
-            }}
-          >
-            {col.content ? (
-              col.content
-            ) : (
-              <DroppableBlock id={`${uniqId}`}></DroppableBlock>
-            )}
-          </div>
-        );
-      })}
+      {props.columnsCount !== 0 ? (
+        props.columns?.map((col) => {
+          return (
+            <div
+              key={col.id}
+              style={{
+                ...col.styles,
+              }}
+            >
+              {col.content ? (
+                col.content
+              ) : (
+                <DroppableBlock id={`${col.id}`}></DroppableBlock>
+              )}
+            </div>
+          );
+        })
+      ) : (
+        <DroppableBlock id={`${props.id}`}>
+          <p className="text-blue-700 text-center">
+            No content here. Drag content from left
+            <br />
+            and set up columns
+          </p>
+        </DroppableBlock>
+      )}
     </div>
   );
 }

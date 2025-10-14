@@ -10,6 +10,8 @@ interface DraggableProps {
   dragHandleRef?: RefObject<HTMLElement>;
   onDragStart?: () => void;
   onDragEnd?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 function Draggable({
@@ -19,6 +21,8 @@ function Draggable({
   dragHandleRef,
   onDragStart,
   onDragEnd,
+  onMouseEnter,
+  onMouseLeave,
 }: DraggableProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: id,
@@ -58,6 +62,8 @@ function Draggable({
       {...attributes}
       {...patchedListeners}
       className={className}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {children}
     </Item>

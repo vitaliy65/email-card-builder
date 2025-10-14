@@ -53,7 +53,7 @@ export const useBlockRenderer = () => {
           if (!el) return null;
           return React.createElement(
             "div",
-            { key: block.uuid, className: "mb-2" },
+            { key: block.uuid, className: "mb-2", id: block.uuid },
             el
           );
         })

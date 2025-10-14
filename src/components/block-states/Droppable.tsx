@@ -24,6 +24,7 @@ function Droppable({
   return (
     <div
       ref={setNodeRef}
+      id={id}
       className={`${isOver && borderStyle} ${className}`}
       style={style}
     >
