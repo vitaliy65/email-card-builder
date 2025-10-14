@@ -1,6 +1,6 @@
 "use client";
 import { useCallback } from "react";
-import { Active, DragEndEvent, Over } from "@dnd-kit/core";
+import { DragEndEvent, Over } from "@dnd-kit/core";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addBlock,
@@ -9,7 +9,8 @@ import {
   updateCanvasColumnBlock,
 } from "@/store/slices/blocksSlice";
 import { blockDefaults } from "@/data/blocks";
-import { BlockTypes, BlockItem } from "@/types/block";
+import { BlockTypes, BlockItem, Column } from "@/types/block";
+import { v4 as uuidv4 } from "uuid";
 
 export const useDragAndDrop = () => {
   const dispatch = useAppDispatch();
@@ -22,12 +23,9 @@ export const useDragAndDrop = () => {
   const createCanvasBlock = useCallback(
     (blockType: BlockTypes): CanvasBlock => {
       const blockTemplate = blockDefaults[blockType] as BlockItem;
-      const timestamp = Date.now();
-      const randomSuffix = Math.random().toString(36).substring(2, 8);
-
       return {
         ...blockTemplate,
-        uuid: `${blockTemplate.id}-${timestamp}-${randomSuffix}`,
+        uuid: uuidv4(),
         properties: {
           ...blockTemplate.properties,
         },
@@ -36,18 +34,18 @@ export const useDragAndDrop = () => {
     []
   );
 
-  const createColBlock = useCallback((blockType: BlockTypes): CanvasBlock => {
+  const createColBlock = useCallback((blockType: BlockTypes): Column => {
     const blockTemplate = blockDefaults[blockType] as BlockItem;
-    const timestamp = Date.now();
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
 
+    // Создаем Column для вставки в колонку ColumnsBlock
     return {
-      ...blockTemplate,
-      uuid: `${blockTemplate.id}-${timestamp}-${randomSuffix}`,
-      properties: {
+      id: uuidv4(), // уникальный ID для колонки
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      content: (blockTemplate as any).content || null,
+      styles: {
         ...blockTemplate.properties,
       },
-    } as CanvasBlock;
+    } as Column;
   }, []);
 
   const handleUpdateColumn = useCallback(
@@ -58,18 +56,29 @@ export const useDragAndDrop = () => {
       over: Over;
       draggedBlockType: BlockTypes;
     }) => {
-      if (over.id.toString().startsWith("col-")) {
+      if (over.id.toString().startsWith("col_")) {
         try {
-          const columnIndex = over.id.toString();
-          console.log(columnIndex);
-          // const updatedColumnBlock = createColBlock(draggedBlockType);
+          const overId = over.id.toString();
+          // Парсим ID: col-{columnBoxIndex}-{columnIndex}
+          const parts = overId.split("_");
 
-          // dispatch(
-          //   updateCanvasColumnBlock({
-          //     block: updatedColumnBlock,
-          //     columnIndex: columnIndex,
-          //   })
-          // );
+          if (parts.length < 2) {
+            console.error("Invalid column ID format:", overId);
+            return;
+          }
+
+          const columnBoxIndex = parts[1]; // UUID блока колонок
+          const columnIndex = parts.length > 2 ? parts[2] : ""; // ID конкретной колонки
+
+          const updatedColumnBlock = createColBlock(draggedBlockType);
+
+          dispatch(
+            updateCanvasColumnBlock({
+              block: updatedColumnBlock,
+              columnBoxIndex,
+              columnIndex,
+            })
+          );
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
           console.error(
@@ -79,7 +88,7 @@ export const useDragAndDrop = () => {
         }
       }
     },
-    []
+    [createColBlock, dispatch]
   );
 
   // Обработка завершения перетаскивания

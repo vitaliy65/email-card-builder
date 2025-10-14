@@ -4,11 +4,7 @@ import React, { ReactNode, RefObject, useRef, useState } from "react";
 import MoveHandle from "./MoveHandle";
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
 import { TooltipContent } from "@radix-ui/react-tooltip";
-import {
-  removeBlock,
-  setGrabbingBlock,
-  setHoveredBlockId,
-} from "@/store/slices/blocksSlice";
+import { removeBlock, setGrabbingBlock } from "@/store/slices/blocksSlice";
 import { useAppDispatch } from "@/store/hooks";
 
 /**
@@ -54,12 +50,6 @@ export default function BlockContainer({
       dragHandleRef={handleRef as RefObject<HTMLElement>}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onMouseEnter={() => {
-        dispatch(setHoveredBlockId({ id: uuid }));
-      }}
-      onMouseLeave={() => {
-        dispatch(setHoveredBlockId({ id: null }));
-      }}
     >
       <Tooltip>
         <TooltipTrigger asChild>

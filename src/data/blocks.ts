@@ -6,7 +6,9 @@ import {
   ImageBlockItem,
   ColumnsBlockItem,
   BlockTypes,
+  Column,
 } from "@/types/block";
+import { v4 as uuidv4 } from "uuid";
 
 // Все дефолты блоков в одном массиве/объекте для быстрого поиска по типу
 export const blockDefaults: Record<
@@ -20,6 +22,7 @@ export const blockDefaults: Record<
 > = {
   [BlockTypes.text]: {
     id: BlockTypes.text,
+    uuid: "",
     type: BlockTypes.text,
     content: "Double-click to edit this text",
     properties: {
@@ -33,6 +36,7 @@ export const blockDefaults: Record<
   } as TextBlockItem,
   [BlockTypes.heading]: {
     id: BlockTypes.heading,
+    uuid: "",
     type: BlockTypes.heading,
     content: "Double-click to edit this text",
     properties: {
@@ -46,6 +50,7 @@ export const blockDefaults: Record<
   } as HeadingBlockItem,
   [BlockTypes.button]: {
     id: BlockTypes.button,
+    uuid: "",
     type: BlockTypes.button,
     content: "Click Me",
     properties: {
@@ -63,6 +68,7 @@ export const blockDefaults: Record<
   } as ButtonBlockItem,
   [BlockTypes.image]: {
     id: BlockTypes.image,
+    uuid: "",
     type: BlockTypes.image,
     src: "https://placehold.co/400x200/png?text=Image",
     alt: "Image",
@@ -78,6 +84,7 @@ export const blockDefaults: Record<
   } as ImageBlockItem,
   [BlockTypes.divider]: {
     id: BlockTypes.divider,
+    uuid: "",
     type: BlockTypes.divider,
     properties: {
       backgroundColor: "#e0e0e0",
@@ -89,6 +96,7 @@ export const blockDefaults: Record<
   } as BlockItem,
   [BlockTypes.spacer]: {
     id: BlockTypes.spacer,
+    uuid: "",
     type: BlockTypes.spacer,
     properties: {
       height: "24px",
@@ -99,8 +107,9 @@ export const blockDefaults: Record<
   } as BlockItem,
   [BlockTypes.columns]: {
     id: BlockTypes.columns,
+    uuid: "",
     type: BlockTypes.columns,
-    columnsCount: 0,
+    columnsCount: 1,
     columns: [],
     gap: "12px",
     gridProps: {
@@ -120,6 +129,12 @@ export const blockDefaults: Record<
       borderStyle: "solid",
     },
   } as ColumnsBlockItem,
+};
+
+export const defaultColumn: Column = {
+  id: "",
+  content: null,
+  styles: {},
 };
 
 // Экспорт каждого дефолта по-отдельности, если это нужно где-то еще

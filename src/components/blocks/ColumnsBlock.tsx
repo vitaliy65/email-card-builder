@@ -17,7 +17,7 @@ export default function ColumnsBlock({
         ...props.gridProps,
       }}
     >
-      {props.columnsCount !== 0 ? (
+      {props.columnsCount && props.columnsCount > 1 ? (
         props.columns?.map((col) => {
           return (
             <div
@@ -29,13 +29,15 @@ export default function ColumnsBlock({
               {col.content ? (
                 col.content
               ) : (
-                <DroppableBlock id={`${col.id}`}></DroppableBlock>
+                <DroppableBlock
+                  id={`col_${props.uuid}_${col.id}`}
+                ></DroppableBlock>
               )}
             </div>
           );
         })
       ) : (
-        <DroppableBlock id={`${props.id}`}>
+        <DroppableBlock id={`col_${props.uuid}`}>
           <p className="text-blue-700 text-center">
             No content here. Drag content from left
             <br />

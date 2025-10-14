@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, CSSProperties } from "react";
+import React, { ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 
 interface DroppableProps {
@@ -18,7 +18,6 @@ function Droppable({
   const { isOver, setNodeRef } = useDroppable({
     id,
   });
-
   const borderStyle = "outline-4 outline-green-500";
 
   return (

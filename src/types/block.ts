@@ -9,6 +9,7 @@ export enum BlockTypes {
 }
 
 export interface BlockItem {
+  uuid: string;
   id: string;
   type: string;
   properties?: CanvasBlockItem;
@@ -71,6 +72,12 @@ export interface ColumnsBlockItem extends BlockItem {
   gridProps: GridProperties;
 }
 
+export interface Column {
+  id: string;
+  content?: React.ReactNode;
+  styles?: CanvasBlockItem;
+}
+
 export interface GridProperties {
   display?: string;
   gridTemplateColumns?: string;
@@ -101,10 +108,4 @@ export interface GridProperties {
   margin?: string;
   boxShadow?: string;
   // Add more as needed, for now these cover typical grid and some common container props
-}
-
-export interface Column {
-  id: string;
-  content?: React.ReactNode;
-  styles?: CanvasBlockItem;
 }

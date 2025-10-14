@@ -1,6 +1,6 @@
 // store/blocksSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BlockItem, ColumnsBlockItem } from "@/types/block";
+import { BlockItem, Column, ColumnsBlockItem, BlockTypes } from "@/types/block";
 
 // Расширяем BlockItem для блоков на Canvas
 export interface CanvasBlock extends BlockItem {
@@ -205,17 +205,52 @@ const blocksSlice = createSlice({
       state.hoveredBlockId = id;
     },
 
+    // Обновляет блок в соответствующей колонке ColumnsBlock
     updateCanvasColumnBlock: (
       state,
-      action: PayloadAction<{ block: CanvasBlock; columnIndex?: string }>
+      action: PayloadAction<{
+        block: Column;
+        columnBoxIndex: string;
+        columnIndex: string;
+      }>
     ) => {
-      const { block, columnIndex } = action.payload;
+      const { block, columnBoxIndex, columnIndex } = action.payload;
 
+      // Находим блок колонок по UUID
       const columnBlock = state.canvasBlocks.find(
-        (block) => block.uuid === state.hoveredBlockId
-      ) as ColumnsBlockItem;
+        (b) => b.uuid === columnBoxIndex
+      ) as (CanvasBlock & ColumnsBlockItem) | undefined;
 
-      // columnBlock.columns
+      if (!columnBlock || columnBlock.type !== BlockTypes.columns) {
+        console.error("Column block not found or not a columns block");
+        return;
+      }
+
+      // Инициализируем columns если их нет
+      if (!columnBlock.columns) {
+        columnBlock.columns = [];
+      }
+
+      // Находим колонку по индексу
+      const columnToUpdate = columnBlock.columns.find(
+        (col) => col.id === columnIndex
+      );
+
+      if (columnToUpdate) {
+        // Обновляем существующую колонку
+        columnToUpdate.content = block.content;
+        columnToUpdate.styles = block.styles;
+      } else {
+        // Добавляем новую колонку если её нет
+        columnBlock.columns.push({
+          id: columnIndex,
+          content: block.content,
+          styles: block.styles,
+        });
+      }
+
+      console.log({ ...columnBlock });
+      console.log(columnBlock.columns.map((b) => b));
     },
   },
 });

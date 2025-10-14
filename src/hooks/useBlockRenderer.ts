@@ -9,6 +9,7 @@ import DividerBlock from "@/components/blocks/DividerBlock";
 import SpacerBlock from "@/components/blocks/SpacerBlock";
 import ColumnsBlock from "@/components/blocks/ColumnsBlock";
 import { BlockTypes } from "@/types/block";
+import { v4 as uuidv4 } from "uuid";
 
 // Карта соответствия типа блока и компонента
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,8 +38,11 @@ export const useBlockRenderer = () => {
         console.warn(`Нет компонента для блока типа "${block.type}"`);
         return null;
       }
-      // Пробрасываем все пропсы блока как есть, компоненты ожидают проп "props"
-      return React.createElement(BlockComponent, { props: block });
+
+      const blockWithUuid = {
+        ...block,
+      };
+      return React.createElement(BlockComponent, { props: blockWithUuid });
     },
     [getBlockComponent]
   );
