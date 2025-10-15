@@ -3,9 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Download, Save, Eye, Code, Settings } from "lucide-react";
 import { useState } from "react";
 
-// Импорт хуков
-import { useExport, useKeyboardShortcuts } from "../index";
-
 /**
  * Пример использования хуков в Header
  * Показывает интеграцию хуков экспорта и горячих клавиш
@@ -13,41 +10,24 @@ import { useExport, useKeyboardShortcuts } from "../index";
 export function HeaderWithHooks() {
   const [isExporting, setIsExporting] = useState(false);
 
-  // Используем хук для экспорта
-  const {
-    exportToHTML,
-    downloadHTML,
-    copyToClipboard,
-    validateBlocksForExport,
-    blockCount,
-    hasBlocks,
-  } = useExport();
-
-  // Используем хук для горячих клавиш
-  useKeyboardShortcuts({
-    enabled: true,
-    global: true,
-  });
-
   // Обработчики для кнопок
   const handleExportHTML = async () => {
     setIsExporting(true);
     try {
-      const result = await downloadHTML("email-template.html", {
-        includeDoctype: true,
-        includeHtmlTag: true,
-        includeHead: true,
-        addContainerWrapper: true,
-        containerWidth: "600px",
-        containerBackground: "#ffffff",
-        minify: false,
-      });
-
-      if (result.success) {
-        console.log("HTML успешно экспортирован");
-      } else {
-        console.error("Ошибка экспорта:", result.error);
-      }
+      // const result = await downloadHTML("email-template.html", {
+      //   includeDoctype: true,
+      //   includeHtmlTag: true,
+      //   includeHead: true,
+      //   addContainerWrapper: true,
+      //   containerWidth: "600px",
+      //   containerBackground: "#ffffff",
+      //   minify: false,
+      // });
+      // if (result.success) {
+      //   console.log("HTML успешно экспортирован");
+      // } else {
+      //   console.error("Ошибка экспорта:", result.error);
+      // }
     } catch (error) {
       console.error("Ошибка при экспорте:", error);
     } finally {
@@ -57,24 +37,23 @@ export function HeaderWithHooks() {
 
   const handlePreview = async () => {
     try {
-      const result = await exportToHTML({
-        includeDoctype: false,
-        includeHtmlTag: false,
-        includeHead: false,
-        addContainerWrapper: true,
-        containerWidth: "600px",
-        containerBackground: "#ffffff",
-        minify: true,
-      });
-
-      if (result.success && result.html) {
-        // Открыть превью в новом окне
-        const previewWindow = window.open("", "_blank");
-        if (previewWindow) {
-          previewWindow.document.write(result.html);
-          previewWindow.document.close();
-        }
-      }
+      // const result = await exportToHTML({
+      //   includeDoctype: false,
+      //   includeHtmlTag: false,
+      //   includeHead: false,
+      //   addContainerWrapper: true,
+      //   containerWidth: "600px",
+      //   containerBackground: "#ffffff",
+      //   minify: true,
+      // });
+      // if (result.success && result.html) {
+      //   // Открыть превью в новом окне
+      //   const previewWindow = window.open("", "_blank");
+      //   if (previewWindow) {
+      //     previewWindow.document.write(result.html);
+      //     previewWindow.document.close();
+      //   }
+      // }
     } catch (error) {
       console.error("Ошибка при создании превью:", error);
     }
@@ -82,20 +61,19 @@ export function HeaderWithHooks() {
 
   const handleCode = async () => {
     try {
-      const result = await copyToClipboard({
-        includeDoctype: true,
-        includeHtmlTag: true,
-        includeHead: true,
-        addContainerWrapper: true,
-        minify: false,
-      });
-
-      if (result.success) {
-        console.log("HTML код скопирован в буфер обмена");
-        // Можно показать уведомление пользователю
-      } else {
-        console.error("Ошибка при копировании:", result.error);
-      }
+      // const result = await copyToClipboard({
+      //   includeDoctype: true,
+      //   includeHtmlTag: true,
+      //   includeHead: true,
+      //   addContainerWrapper: true,
+      //   minify: false,
+      // });
+      // if (result.success) {
+      //   console.log("HTML код скопирован в буфер обмена");
+      //   // Можно показать уведомление пользователю
+      // } else {
+      //   console.error("Ошибка при копировании:", result.error);
+      // }
     } catch (error) {
       console.error("Ошибка при копировании:", error);
     }
@@ -103,15 +81,15 @@ export function HeaderWithHooks() {
 
   const handleSave = () => {
     // Валидация перед сохранением
-    const validation = validateBlocksForExport();
+    // const validation = validateBlocksForExport();
 
-    if (!validation.isValid) {
-      console.error(
-        "Нельзя сохранить: есть ошибки валидации",
-        validation.errors
-      );
-      return;
-    }
+    // if (!validation.isValid) {
+    //   console.error(
+    //     "Нельзя сохранить: есть ошибки валидации",
+    //     validation.errors
+    //   );
+    //   return;
+    // }
 
     console.log("Сохранение проекта...");
     // Здесь можно добавить логику сохранения в localStorage или на сервер
@@ -169,7 +147,7 @@ export function HeaderWithHooks() {
           className="h-8 bg-transparent"
           onClick={handleSave}
           title="Сохранить (Ctrl+S)"
-          disabled={!hasBlocks}
+          // disabled={!hasBlocks}
         >
           <Save className="h-4 w-4 mr-2" />
           Save
@@ -179,8 +157,8 @@ export function HeaderWithHooks() {
           size="sm"
           className="h-8 bg-primary text-primary-foreground hover:bg-primary/90"
           onClick={handleExportHTML}
-          disabled={isExporting || !hasBlocks}
-          title={`Экспорт HTML (${blockCount} блоков)`}
+          // disabled={isExporting || !hasBlocks}
+          // title={`Экспорт HTML (${blockCount} блоков)`}
         >
           <Download className="h-4 w-4 mr-2" />
           {isExporting ? "Exporting..." : "Export HTML"}
