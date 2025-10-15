@@ -7,7 +7,7 @@ import { SpacerBlockDefault } from "@/data/blocks";
 export default function SpacerBlock({
   props = SpacerBlockDefault,
 }: {
-  props: BlockItem;
+  props?: BlockItem;
 }) {
   return (
     <div

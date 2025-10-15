@@ -8,7 +8,7 @@ import React from "react";
 export default function ImageBlock({
   props = ImageBlockDefault,
 }: {
-  props: ImageBlockItem;
+  props?: ImageBlockItem;
 }) {
   return (
     <div

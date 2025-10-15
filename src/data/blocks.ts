@@ -6,9 +6,7 @@ import {
   ImageBlockItem,
   ColumnsBlockItem,
   BlockTypes,
-  Column,
 } from "@/types/block";
-import { v4 as uuidv4 } from "uuid";
 
 // Все дефолты блоков в одном массиве/объекте для быстрого поиска по типу
 export const blockDefaults: Record<
@@ -109,15 +107,13 @@ export const blockDefaults: Record<
     id: BlockTypes.columns,
     uuid: "",
     type: BlockTypes.columns,
-    columnsCount: 1,
+    columnsCount: 0,
     columns: [],
     gap: "12px",
     gridProps: {
       display: "grid",
       zIndex: "10",
       gap: "12px",
-      background: "gray",
-      minHeight: "100px",
     },
     properties: {
       backgroundColor: "#ffffff",
@@ -129,12 +125,6 @@ export const blockDefaults: Record<
       borderStyle: "solid",
     },
   } as ColumnsBlockItem,
-};
-
-export const defaultColumn: Column = {
-  id: "",
-  content: null,
-  styles: {},
 };
 
 // Экспорт каждого дефолта по-отдельности, если это нужно где-то еще

@@ -74,8 +74,7 @@ export interface ColumnsBlockItem extends BlockItem {
 
 export interface Column {
   id: string;
-  content?: React.ReactNode;
-  styles?: CanvasBlockItem;
+  content?: BlockItem | null;
 }
 
 export interface GridProperties {

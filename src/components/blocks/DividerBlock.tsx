@@ -7,7 +7,7 @@ import { DividerBlockDefault } from "@/data/blocks";
 export default function DividerBlock({
   props = DividerBlockDefault,
 }: {
-  props: BlockItem;
+  props?: BlockItem;
 }) {
   return (
     <hr

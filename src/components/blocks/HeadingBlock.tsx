@@ -7,7 +7,7 @@ import React from "react";
 export default function HeadingBlock({
   props = HeadingBlockDefault,
 }: {
-  props: HeadingBlockItem;
+  props?: HeadingBlockItem;
 }) {
   return (
     <h2

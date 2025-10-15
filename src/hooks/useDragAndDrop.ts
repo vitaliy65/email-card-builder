@@ -35,16 +35,15 @@ export const useDragAndDrop = () => {
   );
 
   const createColBlock = useCallback((blockType: BlockTypes): Column => {
-    const blockTemplate = blockDefaults[blockType] as BlockItem;
+    // Создаем данные блока для вставки в колонку ColumnsBlock
+    const blockData = {
+      ...blockDefaults[blockType],
+      uuid: uuidv4(), // уникальный ID для блока
+    };
 
-    // Создаем Column для вставки в колонку ColumnsBlock
     return {
       id: uuidv4(), // уникальный ID для колонки
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      content: (blockTemplate as any).content || null,
-      styles: {
-        ...blockTemplate.properties,
-      },
+      content: blockData,
     } as Column;
   }, []);
 
@@ -59,7 +58,7 @@ export const useDragAndDrop = () => {
       if (over.id.toString().startsWith("col_")) {
         try {
           const overId = over.id.toString();
-          // Парсим ID: col-{columnBoxIndex}-{columnIndex}
+          // Парсим ID: col_{columnBoxIndex}_{columnIndex}
           const parts = overId.split("_");
 
           if (parts.length < 2) {

@@ -226,6 +226,8 @@ const blocksSlice = createSlice({
         return;
       }
 
+      // Удаляем инкремент columnsCount, она должна соответствовать длине массива columns
+
       // Инициализируем columns если их нет
       if (!columnBlock.columns) {
         columnBlock.columns = [];
@@ -239,15 +241,16 @@ const blocksSlice = createSlice({
       if (columnToUpdate) {
         // Обновляем существующую колонку
         columnToUpdate.content = block.content;
-        columnToUpdate.styles = block.styles;
       } else {
         // Добавляем новую колонку если её нет
         columnBlock.columns.push({
           id: columnIndex,
           content: block.content,
-          styles: block.styles,
         });
       }
+
+      // columnsCount всегда соответствует длине массива columns
+      columnBlock.columnsCount = columnBlock.columns.length;
 
       console.log({ ...columnBlock });
       console.log(columnBlock.columns.map((b) => b));

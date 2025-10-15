@@ -7,7 +7,7 @@ import React from "react";
 export default function TextBlock({
   props = TextBlockDefault,
 }: {
-  props: TextBlockItem;
+  props?: TextBlockItem;
 }) {
   return (
     <div

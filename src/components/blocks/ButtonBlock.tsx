@@ -7,7 +7,7 @@ import React from "react";
 export default function ButtonBlock({
   props = ButtonBlockDefault,
 }: {
-  props: ButtonBlockItem;
+  props?: ButtonBlockItem;
 }) {
   return (
     <button
