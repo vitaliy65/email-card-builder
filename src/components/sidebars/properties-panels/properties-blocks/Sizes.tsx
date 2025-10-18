@@ -24,7 +24,7 @@ export default function Sizes({
             value={String(properties?.width ?? "auto")}
             onChange={(e) => {
               const value = ensurePx(e.target.value);
-              handleSaveProperty("width", value);
+              handleSaveProperty("width", e.target.value);
               onChange({ width: value });
             }}
           />
@@ -39,7 +39,7 @@ export default function Sizes({
             value={String(properties?.height ?? "auto")}
             onChange={(e) => {
               const value = ensurePx(e.target.value);
-              handleSaveProperty("height", value);
+              handleSaveProperty("height", e.target.value);
               onChange({ height: value });
             }}
           />

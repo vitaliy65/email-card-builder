@@ -24,7 +24,7 @@ export default function Borders({
             value={String(properties?.borderRadius ?? "8px")}
             onChange={(e) => {
               const value = ensurePx(e.target.value);
-              handleSaveProperty("borderRadius", value);
+              handleSaveProperty("borderRadius", e.target.value);
               onChange({ borderRadius: value });
             }}
           />
@@ -39,7 +39,7 @@ export default function Borders({
             value={String(properties?.borderWidth ?? "1px")}
             onChange={(e) => {
               const value = ensurePx(e.target.value);
-              handleSaveProperty("borderWidth", value);
+              handleSaveProperty("borderWidth", e.target.value);
               onChange({ borderWidth: value });
             }}
           />
