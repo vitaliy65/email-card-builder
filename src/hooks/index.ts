@@ -2,7 +2,6 @@
 
 // Новые хуки
 export { useCanvasControls } from "./useCanvasControls";
-export { useBlockSelection } from "./useBlockSelection";
 export { useDragAndDrop } from "./useDragAndDrop";
 export { useBlockRenderer } from "./useBlockRenderer";
 
