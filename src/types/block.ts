@@ -12,12 +12,14 @@ export interface BlockItem {
   uuid: string;
   id: string;
   type: string;
-  properties?: CanvasBlockItem;
+  properties?: GeneralBlockProperties;
 }
 
 // Базовый тип для стилей и общих свойств блока
-export interface CanvasBlockItem {
-  backgroundColor?: string;
+export interface GeneralBlockProperties {
+  // general
+  content?: string;
+  background?: string;
   padding?: string | number;
   margin?: string | number;
   borderRadius?: string | number;
@@ -31,27 +33,49 @@ export interface CanvasBlockItem {
   height?: string | number;
   display?: string;
   gap?: string | number;
+  textAlign?: CanvasTextAlign;
+  zIndex?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  minHeight?: string | number;
+  maxHeight?: string | number;
+  // выравнивание объектов внутри (flex/grid)
+  alignItems?: string;
+  justifyContent?: string;
 }
 
 // Текстовый блок
 export interface TextBlockItem extends BlockItem {
   id: BlockTypes.text;
   type: BlockTypes.text;
-  content?: string;
 }
 
 // Заголовок
 export interface HeadingBlockItem extends BlockItem {
   id: BlockTypes.heading;
   type: BlockTypes.heading;
-  content?: string;
 }
 
 // Кнопка
 export interface ButtonBlockItem extends BlockItem {
   id: BlockTypes.button;
   type: BlockTypes.button;
-  content?: string;
+}
+
+// Основные стили для изображения
+export interface ImageStyleProperties {
+  width?: string | number;
+  height?: string | number;
+  borderRadius?: string | number;
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  boxShadow?: string;
+  borderColor?: string;
+  borderWidth?: string | number;
+  borderStyle?: string;
+  display?: string;
+  margin?: string | number;
+  padding?: string | number;
+  backgroundColor?: string;
 }
 
 // Изображение
@@ -60,6 +84,7 @@ export interface ImageBlockItem extends BlockItem {
   type: BlockTypes.image;
   src?: string;
   alt?: string;
+  style?: ImageStyleProperties;
 }
 
 // Columns
@@ -68,8 +93,7 @@ export interface ColumnsBlockItem extends BlockItem {
   type: BlockTypes.columns;
   columnsCount?: number;
   columns?: Column[];
-  gap: `${number}px`;
-  gridProps: GridProperties;
+  properties?: GridProperties;
 }
 
 export interface Column {
@@ -77,34 +101,15 @@ export interface Column {
   content?: BlockItem | null;
 }
 
-export interface GridProperties {
-  display?: string;
+// GridProperties will only have properties specific to grid and not those in CanvasBlockItem
+export interface GridProperties extends GeneralBlockProperties {
   gridTemplateColumns?: string;
   gridTemplateRows?: string;
   gridColumnGap?: string;
   gridRowGap?: string;
   gridAutoFlow?: string;
   justifyItems?: string;
-  alignItems?: string;
-  justifyContent?: string;
   alignContent?: string;
   placeItems?: string;
   placeContent?: string;
-  gap?: string;
-  background?: string;
-  zIndex?: string | number;
-  width?: string | number;
-  height?: string | number;
-  minWidth?: string | number;
-  maxWidth?: string | number;
-  minHeight?: string | number;
-  maxHeight?: string | number;
-  borderRadius?: string | number;
-  borderColor?: string;
-  borderWidth?: string | number;
-  borderStyle?: string;
-  padding?: string;
-  margin?: string;
-  boxShadow?: string;
-  // Add more as needed, for now these cover typical grid and some common container props
 }

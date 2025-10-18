@@ -7,9 +7,7 @@ export const useBlockSelection = () => {
   const dispatch = useAppDispatch();
 
   // Получаем состояние из Redux
-  const selectedBlockId = useAppSelector(
-    (state) => state.blocks.selectedBlockId
-  );
+  const selectedBlockId = useAppSelector((state) => state.blocks.selectedBlock);
   const canvasBlocks = useAppSelector((state) => state.blocks.canvasBlocks);
 
   // Получаем данные выбранного блока

@@ -1,6 +1,12 @@
 // store/blocksSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BlockItem, Column, ColumnsBlockItem, BlockTypes } from "@/types/block";
+import {
+  BlockItem,
+  Column,
+  ColumnsBlockItem,
+  BlockTypes,
+  GeneralBlockProperties,
+} from "@/types/block";
 
 // Расширяем BlockItem для блоков на Canvas
 export interface CanvasBlock extends BlockItem {
@@ -9,14 +15,14 @@ export interface CanvasBlock extends BlockItem {
 
 interface BlocksState {
   canvasBlocks: CanvasBlock[]; // блоки на Canvas (в нужном порядке)
-  selectedBlockId: string | null; // uuid выбранного блока
+  selectedBlock: CanvasBlock | null; // uuid выбранного блока
   grabingBlockUUID: string | null;
   hoveredBlockId: string | null;
 }
 
 const initialState: BlocksState = {
   canvasBlocks: [],
-  selectedBlockId: null,
+  selectedBlock: null,
   hoveredBlockId: null,
   grabingBlockUUID: null,
 };
@@ -153,21 +159,37 @@ const blocksSlice = createSlice({
     },
 
     // Обновить свойства блока на Canvas
-    updateBlock: (
-      state,
+    updateBlockProperties: <T extends GeneralBlockProperties>(
+      state: BlocksState,
       action: PayloadAction<{
         uuid: string;
-        properties: Partial<BlockItem["properties"]>;
+        updatedProperties: Partial<T>;
       }>
     ) => {
-      const block = state.canvasBlocks.find(
+      const { uuid, updatedProperties } = action.payload;
+
+      const idx = state.canvasBlocks.findIndex(
         (b) => b.uuid === action.payload.uuid
       );
-      if (block) {
-        block.properties = {
-          ...block.properties,
-          ...action.payload.properties,
+
+      if (idx !== -1) {
+        state.canvasBlocks[idx] = {
+          ...state.canvasBlocks[idx],
+          properties: {
+            ...state.canvasBlocks[idx].properties,
+            ...updatedProperties,
+          },
         };
+        // Если выбранный блок совпадает по uuid — тоже обновляем
+        if (state.selectedBlock && state.selectedBlock.uuid === uuid) {
+          state.selectedBlock = {
+            ...state.selectedBlock,
+            properties: {
+              ...state.selectedBlock.properties,
+              ...updatedProperties,
+            },
+          };
+        }
       }
     },
 
@@ -176,20 +198,29 @@ const blocksSlice = createSlice({
       state.canvasBlocks = state.canvasBlocks.filter(
         (b) => b.uuid !== action.payload
       );
-      if (state.selectedBlockId === action.payload) {
-        state.selectedBlockId = null;
+      if (state.selectedBlock?.uuid === action.payload) {
+        state.selectedBlock = null;
       }
     },
 
     // Выбрать блок для редактирования
     selectBlock: (state, action: PayloadAction<string | null>) => {
-      state.selectedBlockId = action.payload;
+      const selectedBlock = state.canvasBlocks.findLast(
+        (block) => block.uuid === action.payload
+      );
+
+      if (!selectedBlock) {
+        state.selectedBlock = null;
+        return;
+      }
+
+      state.selectedBlock = selectedBlock;
     },
 
     // Сброс Canvas
     resetCanvas: (state) => {
       state.canvasBlocks = [];
-      state.selectedBlockId = null;
+      state.selectedBlock = null;
     },
 
     // Установить uuid блока, который захвачен (перетаскивается)
@@ -263,7 +294,7 @@ export const {
   addBetween,
   moveBlock,
   moveBetween,
-  updateBlock,
+  updateBlockProperties,
   removeBlock,
   selectBlock,
   resetCanvas,

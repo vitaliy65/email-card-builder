@@ -15,7 +15,7 @@ export default function ColumnsBlock({
     <div
       style={{
         gridTemplateColumns: `repeat(${props.columnsCount}, 1fr)`,
-        ...props.gridProps,
+        ...props.properties,
       }}
     >
       {props.columnsCount && props.columnsCount > 0 ? (

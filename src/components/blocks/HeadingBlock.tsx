@@ -15,7 +15,7 @@ export default function HeadingBlock({
         ...props.properties,
       }}
     >
-      {props.content}
+      {props.properties?.content}
     </h2>
   );
 }

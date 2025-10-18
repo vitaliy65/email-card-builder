@@ -4,7 +4,11 @@ import React, { ReactNode, RefObject, useRef, useState } from "react";
 import MoveHandle from "./MoveHandle";
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
 import { TooltipContent } from "@radix-ui/react-tooltip";
-import { removeBlock, setGrabbingBlock } from "@/store/slices/blocksSlice";
+import {
+  removeBlock,
+  selectBlock,
+  setGrabbingBlock,
+} from "@/store/slices/blocksSlice";
 import { useAppDispatch } from "@/store/hooks";
 
 /**
@@ -34,6 +38,14 @@ export default function BlockContainer({
     dispatch(setGrabbingBlock(uuid));
   };
 
+  const handleSelectBlock = () => {
+    try {
+      dispatch(selectBlock(uuid));
+    } catch {
+      console.error("Cant select this block! :(");
+    }
+  };
+
   // Функция вызывается при окончании drag (через Draggable)
   // Добавляем задержку при завершении перетаскивания
   const handleDragEnd = () => {
@@ -59,11 +71,12 @@ export default function BlockContainer({
               className="absolute inset-0"
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={() => setHovered(false)}
+              onClick={handleSelectBlock}
             >
               <div
-                className={`absolute inset-0 
+                className={`w-full h-full 
             ${hovered ? "bg-blue-500/20 border-2 border-blue-400" : ""} 
-            transition-colors pointer-events-none`}
+            transition-colors pointer-events-none z-10`}
               ></div>
               <MoveHandle handleRef={handleRef} setHovered={setHovered} />
             </div>

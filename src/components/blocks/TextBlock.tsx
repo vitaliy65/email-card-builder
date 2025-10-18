@@ -15,7 +15,7 @@ export default function TextBlock({
         ...props.properties,
       }}
     >
-      {props.content}
+      {props.properties?.content}
     </div>
   );
 }

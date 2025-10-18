@@ -16,7 +16,7 @@ export default function ButtonBlock({
       }}
       type="button"
     >
-      {props.content}
+      {props.properties?.content}
     </button>
   );
 }
