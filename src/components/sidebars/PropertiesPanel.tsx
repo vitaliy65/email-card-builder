@@ -1,8 +1,11 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { Palette } from "lucide-react";
+import { Link, Palette } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateBlockProperties } from "@/store/slices/blocksSlice";
+import {
+  updateBlockField,
+  updateBlockProperties,
+} from "@/store/slices/blocksSlice";
 import {
   BlockTypes,
   TextBlockItem,
@@ -12,8 +15,10 @@ import {
   ColumnsBlockItem,
   BlockItem,
   GeneralBlockProperties,
+  LinkBlockItem,
 } from "@/types/block";
 import dynamic from "next/dynamic";
+import LinkPropertiesPanel from "./properties-panels/LinkPropertiesPanel";
 
 const TextPropertiesPanel = dynamic(
   () => import("@/components/sidebars/properties-panels/TextPropertiesPanel")
@@ -54,6 +59,15 @@ export function PropertiesPanel() {
       );
     };
 
+    const onChangeBlockField = <T extends BlockItem>(props: Partial<T>) => {
+      dispatch(
+        updateBlockField({
+          uuid: selectedBlock.uuid,
+          updatedField: props,
+        })
+      );
+    };
+
     switch (selectedBlock.type) {
       case BlockTypes.text:
         return (
@@ -74,6 +88,7 @@ export function PropertiesPanel() {
           <ButtonPropertiesPanel
             block={selectedBlock as ButtonBlockItem}
             onChange={onChange}
+            onChangeBlockField={onChangeBlockField}
           />
         );
       case BlockTypes.image:
@@ -81,6 +96,7 @@ export function PropertiesPanel() {
           <ImagePropertiesPanel
             block={selectedBlock as ImageBlockItem}
             onChange={onChange}
+            onChangeBlockField={onChangeBlockField}
           />
         );
       case BlockTypes.divider:
@@ -102,6 +118,14 @@ export function PropertiesPanel() {
           <ColumnsPropertiesPanel
             block={selectedBlock as ColumnsBlockItem}
             onChange={onChange}
+          />
+        );
+      case BlockTypes.link:
+        return (
+          <LinkPropertiesPanel
+            block={selectedBlock as LinkBlockItem}
+            onChange={onChange}
+            onChangeBlockField={onChangeBlockField}
           />
         );
       default:

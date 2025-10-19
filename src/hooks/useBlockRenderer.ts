@@ -9,7 +9,7 @@ import DividerBlock from "@/components/blocks/DividerBlock";
 import SpacerBlock from "@/components/blocks/SpacerBlock";
 import ColumnsBlock from "@/components/blocks/ColumnsBlock";
 import { BlockTypes } from "@/types/block";
-import { v4 as uuidv4 } from "uuid";
+import LinkBlock from "@/components/blocks/LinkBlock";
 
 // Карта соответствия типа блока и компонента
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,6 +21,7 @@ const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   [BlockTypes.divider]: DividerBlock,
   [BlockTypes.spacer]: SpacerBlock,
   [BlockTypes.columns]: ColumnsBlock,
+  [BlockTypes.link]: LinkBlock,
 };
 
 export const useBlockRenderer = () => {

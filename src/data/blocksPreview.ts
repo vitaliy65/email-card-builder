@@ -8,6 +8,7 @@ import {
   Minus,
   Space,
   Columns2,
+  Link,
 } from "lucide-react";
 
 export const blockPreviews: BlockPreviewItem[] = [
@@ -59,5 +60,12 @@ export const blockPreviews: BlockPreviewItem[] = [
     icon: Columns2,
     label: "Columns",
     description: "Add column layout",
+  },
+  {
+    id: BlockTypes.link,
+    type: BlockTypes.link,
+    icon: Link,
+    label: "Link",
+    description: "Add a link",
   },
 ];

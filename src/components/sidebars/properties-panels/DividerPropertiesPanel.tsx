@@ -17,7 +17,7 @@ export default function DividerPropertiesPanel({
 
   useEffect(() => {
     setProperties(block.properties);
-  }, [block.uuid, block.properties, setProperties]);
+  }, [block.uuid]);
 
   return (
     <div className="space-y-6">

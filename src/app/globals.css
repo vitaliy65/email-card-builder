@@ -120,3 +120,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.shady-Lane-gradient {
+  background: linear-gradient(90deg, #3f2b96 0%, #a8c0ff 100%);
+}

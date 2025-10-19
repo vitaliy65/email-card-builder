@@ -38,9 +38,8 @@ export default function Offsets({
             className="bg-background border-input"
             value={String(properties?.margin ?? "0px")}
             onChange={(e) => {
-              const value = ensurePx(e.target.value);
               handleSaveProperty("margin", e.target.value);
-              onChange({ margin: value });
+              onChange({ margin: ensurePx(e.target.value) });
             }}
           />
         </div>

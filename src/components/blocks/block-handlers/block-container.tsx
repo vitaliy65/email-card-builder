@@ -66,7 +66,7 @@ export default function BlockContainer({
       <Tooltip>
         <TooltipTrigger asChild>
           <div>
-            {children}
+            <div className="min-h-[42px]">{children}</div>
             <div
               className="absolute inset-0"
               onMouseEnter={() => setHovered(true)}
@@ -74,7 +74,7 @@ export default function BlockContainer({
               onClick={handleSelectBlock}
             >
               <div
-                className={`w-full h-full 
+                className={`w-full h-full
             ${hovered ? "bg-blue-500/20 border-2 border-blue-400" : ""} 
             transition-colors pointer-events-none z-10`}
               ></div>
@@ -82,8 +82,8 @@ export default function BlockContainer({
             </div>
           </div>
         </TooltipTrigger>
-        <TooltipContent>
-          <div className="bg-black rounded-lg flex items-center gap-2 p-2 mb-2">
+        <TooltipContent side="left">
+          <div className="bg-black rounded-lg flex items-center gap-2 p-2 mr-2">
             <button
               className=" p-1 rounded hover:bg-red-500 transition-colors"
               onClick={handleDelete}

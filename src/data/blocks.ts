@@ -6,6 +6,7 @@ import {
   ImageBlockItem,
   ColumnsBlockItem,
   BlockTypes,
+  LinkBlockItem,
 } from "@/types/block";
 
 // Все дефолты блоков в одном массиве/объекте для быстрого поиска по типу
@@ -17,6 +18,7 @@ export const blockDefaults: Record<
   | ButtonBlockItem
   | ImageBlockItem
   | ColumnsBlockItem
+  | LinkBlockItem
 > = {
   [BlockTypes.text]: {
     id: BlockTypes.text,
@@ -66,6 +68,8 @@ export const blockDefaults: Record<
     id: BlockTypes.button,
     uuid: "",
     type: BlockTypes.button,
+    href: "",
+    onClick: () => {},
     properties: {
       content: "Click Me",
       backgroundColor: "#007bff",
@@ -88,6 +92,8 @@ export const blockDefaults: Record<
     id: BlockTypes.image,
     uuid: "",
     type: BlockTypes.image,
+    href: "",
+    onClick: () => {},
     src: "https://placehold.co/400x200/png?text=Image",
     alt: "Image",
     properties: {
@@ -110,15 +116,15 @@ export const blockDefaults: Record<
     type: BlockTypes.divider,
     properties: {
       backgroundColor: "#e0e0e0",
-      padding: "12px 0",
-      margin: "0",
-      borderRadius: "0px",
+      padding: "0px",
+      margin: "12px 0px",
+      borderRadius: "12px",
       borderColor: "#e0e0e0",
-      borderWidth: "1px",
-      borderStyle: "solid",
+      borderWidth: "0px",
+      borderStyle: "none",
       width: "100%",
       height: "1px",
-      display: "block",
+      display: "inline-block",
       gap: "0px",
     },
   } as BlockItem,
@@ -127,7 +133,7 @@ export const blockDefaults: Record<
     uuid: "",
     type: BlockTypes.spacer,
     properties: {
-      height: "24px",
+      height: "32px",
       backgroundColor: "#ffffff",
       padding: "0",
       margin: "0",
@@ -164,6 +170,40 @@ export const blockDefaults: Record<
       minHeight: "0",
     },
   } as ColumnsBlockItem,
+  [BlockTypes.link]: {
+    id: BlockTypes.link,
+    uuid: "",
+    type: BlockTypes.link,
+    href: "https://example.com",
+    properties: {
+      content: "This is a test link",
+      backgroundColor: "#ffffff",
+      padding: "12px 0px",
+      margin: "0px",
+      fontSize: "14px",
+      fontWeight: 600,
+      color: "#007bff",
+      borderRadius: "0px",
+      borderColor: "#000000",
+      borderWidth: "0px",
+      borderStyle: "none",
+      width: "auto",
+      height: "auto",
+      display: "inline-block",
+      gap: "0px",
+      // Default link styles from types/block.ts
+      textDecoration: "underline",
+      underline: true,
+      cursor: "pointer",
+      transition: "color 0.2s, background 0.2s",
+      hoverColor: "#0056b3",
+      hoverBackgroundColor: "#eaeaea",
+      hoverTextDecoration: "underline",
+      activeColor: "#003d80",
+      activeBackgroundColor: "#d1d1d1",
+      visitedColor: "#551a8b",
+    },
+  } as LinkBlockItem,
 };
 
 // Экспорт каждого дефолта по-отдельности, если это нужно где-то еще
@@ -184,3 +224,4 @@ export const SpacerBlockDefault = blockDefaults[BlockTypes.spacer] as BlockItem;
 export const ColumnBlockDefault = blockDefaults[
   BlockTypes.columns
 ] as ColumnsBlockItem;
+export const LinkBlockDefault = blockDefaults[BlockTypes.link] as LinkBlockItem;

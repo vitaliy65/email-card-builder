@@ -17,6 +17,7 @@ import ImageBlock from "@/components/blocks/ImageBlock";
 import DividerBlock from "@/components/blocks/DividerBlock";
 import SpacerBlock from "@/components/blocks/SpacerBlock";
 import ColumnsBlock from "@/components/blocks/ColumnsBlock";
+import LinkBlock from "@/components/blocks/LinkBlock";
 
 // Типы для каждого компонента блока
 type TextBlockComponent = React.ComponentType<{ props?: TextBlockItem }>;
@@ -46,6 +47,7 @@ export const blockComponents: Record<BlockTypes, BlockComponent> = {
   [BlockTypes.divider]: DividerBlock,
   [BlockTypes.spacer]: SpacerBlock,
   [BlockTypes.columns]: ColumnsBlock,
+  [BlockTypes.link]: LinkBlock,
 };
 
 // Экспорт отдельных компонентов для удобства
@@ -56,3 +58,4 @@ export const ImageBlockComponent = blockComponents[BlockTypes.image];
 export const DividerBlockComponent = blockComponents[BlockTypes.divider];
 export const SpacerBlockComponent = blockComponents[BlockTypes.spacer];
 export const ColumnsBlockComponent = blockComponents[BlockTypes.columns];
+export const LinkBlockComponent = blockComponents[BlockTypes.link];

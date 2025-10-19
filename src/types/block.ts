@@ -6,12 +6,17 @@ export enum BlockTypes {
   divider = "divider",
   spacer = "spacer",
   columns = "columns",
+  link = "link",
 }
 
 export interface BlockItem {
   uuid: string;
-  id: string;
-  type: string;
+  id: BlockTypes;
+  type: BlockTypes;
+  onClick?: (
+    event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>
+  ) => void;
+  href?: string;
   properties?: GeneralBlockProperties;
 }
 
@@ -46,20 +51,41 @@ export interface GeneralBlockProperties {
 
 // Текстовый блок
 export interface TextBlockItem extends BlockItem {
-  id: BlockTypes.text;
-  type: BlockTypes.text;
+  id: BlockTypes;
+  type: BlockTypes;
 }
 
 // Заголовок
 export interface HeadingBlockItem extends BlockItem {
-  id: BlockTypes.heading;
-  type: BlockTypes.heading;
+  id: BlockTypes;
+  type: BlockTypes;
 }
 
 // Кнопка
 export interface ButtonBlockItem extends BlockItem {
-  id: BlockTypes.button;
-  type: BlockTypes.button;
+  id: BlockTypes;
+  type: BlockTypes;
+}
+
+// Добавлены эксклюзивные стили для ссылок
+export interface LinkProperties extends GeneralBlockProperties {
+  textDecoration?: string;
+  hoverColor?: string;
+  hoverBackgroundColor?: string;
+  hoverTextDecoration?: string;
+  activeColor?: string;
+  activeBackgroundColor?: string;
+  visitedColor?: string;
+  underline?: boolean;
+  cursor?: string;
+  transition?: string;
+  // можно добавить остальные по необходимости
+}
+
+export interface LinkBlockItem extends BlockItem {
+  id: BlockTypes;
+  type: BlockTypes;
+  properties?: LinkProperties;
 }
 
 // Основные стили для изображения
@@ -80,8 +106,8 @@ export interface ImageStyleProperties {
 
 // Изображение
 export interface ImageBlockItem extends BlockItem {
-  id: BlockTypes.image;
-  type: BlockTypes.image;
+  id: BlockTypes;
+  type: BlockTypes;
   src?: string;
   alt?: string;
   style?: ImageStyleProperties;
@@ -89,8 +115,8 @@ export interface ImageBlockItem extends BlockItem {
 
 // Columns
 export interface ColumnsBlockItem extends BlockItem {
-  id: BlockTypes.columns;
-  type: BlockTypes.columns;
+  id: BlockTypes;
+  type: BlockTypes;
   columnsCount?: number;
   columns?: Column[];
   properties?: GridProperties;

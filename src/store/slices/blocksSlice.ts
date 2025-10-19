@@ -193,6 +193,34 @@ const blocksSlice = createSlice({
       }
     },
 
+    updateBlockField: <T extends BlockItem>(
+      state: BlocksState,
+      action: PayloadAction<{
+        uuid: string;
+        updatedField: Partial<T>;
+      }>
+    ) => {
+      const { uuid, updatedField: updatedProperties } = action.payload;
+
+      const idx = state.canvasBlocks.findIndex((b) => b.uuid === uuid);
+
+      if (idx !== -1) {
+        state.canvasBlocks[idx] = {
+          ...state.canvasBlocks[idx],
+          ...updatedProperties,
+          // properties остаётся без изменений (для обновления свойств используйте updateBlockProperties)
+        };
+        // Если выбранный блок совпадает по uuid — тоже обновляем
+        if (state.selectedBlock && state.selectedBlock.uuid === uuid) {
+          state.selectedBlock = {
+            ...state.selectedBlock,
+            ...updatedProperties,
+            // properties остаётся без изменений
+          };
+        }
+      }
+    },
+
     // Удалить блок с Canvas
     removeBlock: (state, action: PayloadAction<string>) => {
       state.canvasBlocks = state.canvasBlocks.filter(
@@ -301,5 +329,6 @@ export const {
   setGrabbingBlock,
   updateCanvasColumnBlock,
   setHoveredBlockId,
+  updateBlockField,
 } = blocksSlice.actions;
 export default blocksSlice.reducer;

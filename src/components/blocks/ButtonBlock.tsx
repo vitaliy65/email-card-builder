@@ -15,6 +15,7 @@ export default function ButtonBlock({
         ...props.properties,
       }}
       type="button"
+      onClick={props.onClick}
     >
       {props.properties?.content}
     </button>

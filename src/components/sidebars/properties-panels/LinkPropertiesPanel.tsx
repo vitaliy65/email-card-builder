@@ -1,4 +1,4 @@
-import { ButtonPropertiesPanelProps } from "@/types/properties-panels";
+import { LinkPropertiesPanelProps } from "@/types/properties-panels";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-label";
 import Typography from "./properties-blocks/Typography";
@@ -8,19 +8,19 @@ import Sizes from "./properties-blocks/Sizes";
 import Offsets from "./properties-blocks/Offsets";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { ButtonBlockItem, GeneralBlockProperties } from "@/types/block"; // adjust this import path as necessary
-import ActionLink from "./properties-blocks/ActionLink";
+import { ButtonBlockItem, LinkBlockItem, LinkProperties } from "@/types/block";
+import LinkField from "./properties-blocks/LinkField";
 import useSaveField from "@/hooks/properties-panels/useSaveField";
 
-export default function ButtonPropertiesPanel({
+export default function LinkPropertiesPanel({
   block,
   onChange,
   onChangeBlockField,
-}: ButtonPropertiesPanelProps) {
+}: LinkPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GeneralBlockProperties>(undefined);
+    useSaveProperties<LinkProperties>(undefined);
   const { fields, setFields, handleSaveField } =
-    useSaveField<ButtonBlockItem>(undefined);
+    useSaveField<LinkBlockItem>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);
@@ -42,46 +42,37 @@ export default function ButtonPropertiesPanel({
         />
       </div>
 
-      <ActionLink
+      <LinkField
         block={block}
         fields={fields}
         handleSaveField={handleSaveField}
         onChangeBlockField={onChangeBlockField}
       />
 
-      {/* Typography - all associated with text */}
       <Typography
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
         onChange={onChange}
       />
-
-      {/* colors for background and border*/}
       <Colors
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
         onChange={onChange}
       />
-
-      {/* Граница */}
       <Borders
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
         onChange={onChange}
       />
-
-      {/* Размер */}
       <Sizes
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
         onChange={onChange}
       />
-
-      {/* Отступы */}
       <Offsets
         block={block}
         properties={properties}

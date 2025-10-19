@@ -1,6 +1,4 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ColumnsPropertiesPanelProps } from "@/types/properties-panels";
 import Colors from "./properties-blocks/Colors";
 import Borders from "./properties-blocks/Borders";
@@ -23,13 +21,7 @@ export default function ColumnsPropertiesPanel({
   useEffect(() => {
     setColumnCount(block.columnsCount);
     setProperties(block.properties);
-  }, [
-    block.columnsCount,
-    block.uuid,
-    block.properties,
-    setProperties,
-    handleSaveProperty,
-  ]);
+  }, [block.columnsCount, block.uuid]);
 
   return (
     <div className="space-y-6">
