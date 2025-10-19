@@ -66,7 +66,7 @@ export default function BlockContainer({
       <Tooltip>
         <TooltipTrigger asChild>
           <div>
-            <div className="min-h-[42px]">{children}</div>
+            <div className="min-h-[32px]">{children}</div>
             <div
               className="absolute inset-0"
               onMouseEnter={() => setHovered(true)}

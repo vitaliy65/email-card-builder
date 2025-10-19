@@ -8,10 +8,13 @@ import Offsets from "./properties-blocks/Offsets";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
 import { GeneralBlockProperties } from "@/types/block";
+import BlockJustification from "./properties-blocks/BlockJustification";
+import ImageContain from "./properties-blocks/ImageContain";
 
 export default function ImagePropertiesPanel({
   block,
   onChange,
+  onChangeBlockField,
 }: ImagePropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
     useSaveProperties<GeneralBlockProperties>(undefined);
@@ -22,14 +25,14 @@ export default function ImagePropertiesPanel({
 
   return (
     <div className="space-y-6">
-      {/* <div className="space-y-3">
+      <div className="space-y-3">
         <Label className="text-xs font-semibold text-foreground">Image</Label>
         <Input
           placeholder="Image URL"
           className="bg-background border-input"
           value={block.src || ""}
           onChange={(e) => {
-            onChange({ src: e.target.value });
+            onChangeBlockField({ src: e.target.value });
           }}
         />
         <Input
@@ -37,10 +40,22 @@ export default function ImagePropertiesPanel({
           className="bg-background border-input"
           value={block.alt || ""}
           onChange={(e) => {
-            onChange({ alt: e.target.value });
+            onChangeBlockField({ alt: e.target.value });
           }}
         />
-      </div> */}
+      </div>
+      <BlockJustification
+        block={block}
+        properties={properties}
+        handleSaveProperty={handleSaveProperty}
+        onChange={onChange}
+      />
+      <ImageContain
+        block={block}
+        properties={properties}
+        handleSaveProperty={handleSaveProperty}
+        onChange={onChange}
+      />
       <Sizes
         block={block}
         properties={properties}

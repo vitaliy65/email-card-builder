@@ -4,7 +4,6 @@ import { Label } from "@radix-ui/react-label";
 import React from "react";
 import { AlignLeft, AlignCenter, AlignRight, AlignJustify } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BlockItem, GeneralBlockProperties } from "@/types/block";
 import { PropertiesBlockProps } from "@/types/properties-panels";
 
 const TEXT_ALIGN_OPTIONS = [

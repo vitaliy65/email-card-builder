@@ -12,21 +12,20 @@ Create a lightweight, drag-and-drop web editor for building responsive email car
 
 - [x] Initialize Next.js + Tailwind CSS
 - [x] Setup Redux Toolkit + Redux Persist
-- [ ] Add drag-and-drop (dnd-kit)
-- [ ] Implement basic Canvas and Text block
+- [x] Add drag-and-drop (dnd-kit)
+- [x] Implement basic Canvas and Text block
 
 ### Phase 2: Editor & Styling (Week 2)
 
-- [ ] Add editable blocks (Text, Button, Image)
-- [ ] Implement property panel (colors, font, padding)
-- [ ] Enable real-time content editing
-- [ ] Save editor state with Redux Persist
+- [x] Add editable blocks (Text, Button, Image)
+- [x] Implement property panel (colors, font, padding)
+- [x] Enable real-time content editing
+- [x] Save editor state with Redux Persist
 
 ### Phase 3: Export & Code Blocks (Week 3)
 
 - [ ] Export to HTML (inline styles)
 - [ ] Add html-to-image preview
-- [ ] Integrate code editor (Monaco)
 - [ ] Validate custom HTML blocks
 
 ### Phase 4: Templates & Deployment (Week 4)
@@ -34,7 +33,7 @@ Create a lightweight, drag-and-drop web editor for building responsive email car
 - [ ] Create base templates (3–5 layouts)
 - [ ] Add template loader
 - [ ] Optional: Firebase Auth integration
-- [ ] Deploy to Vercel
+- [x] Deploy to Vercel
 - [ ] Final UI polish and testing
 
 ---

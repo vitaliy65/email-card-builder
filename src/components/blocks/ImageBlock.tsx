@@ -13,16 +13,17 @@ export default function ImageBlock({
   return (
     <div
       style={{
-        ...props.properties,
+        display: "flex",
+        alignItems: props.properties?.alignItems,
+        justifyContent: props.properties?.justifyContent,
+        width: "100%",
       }}
     >
       <img
         src={props.src}
         alt={props.alt}
         style={{
-          maxWidth: "100%",
-          maxHeight: "300px",
-          display: "block",
+          ...props.properties,
         }}
         draggable={false}
       />

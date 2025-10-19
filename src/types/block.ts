@@ -37,6 +37,7 @@ export interface GeneralBlockProperties {
   width?: string | number;
   height?: string | number;
   display?: string;
+  boxShadow?: string;
   gap?: string | number;
   textAlign?: CanvasTextAlign;
   zIndex?: string | number;
@@ -47,6 +48,7 @@ export interface GeneralBlockProperties {
   // выравнивание объектов внутри (flex/grid)
   alignItems?: string;
   justifyContent?: string;
+  objectFit?: React.CSSProperties["objectFit"];
 }
 
 // Текстовый блок
@@ -88,29 +90,12 @@ export interface LinkBlockItem extends BlockItem {
   properties?: LinkProperties;
 }
 
-// Основные стили для изображения
-export interface ImageStyleProperties {
-  width?: string | number;
-  height?: string | number;
-  borderRadius?: string | number;
-  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
-  boxShadow?: string;
-  borderColor?: string;
-  borderWidth?: string | number;
-  borderStyle?: string;
-  display?: string;
-  margin?: string | number;
-  padding?: string | number;
-  backgroundColor?: string;
-}
-
 // Изображение
 export interface ImageBlockItem extends BlockItem {
   id: BlockTypes;
   type: BlockTypes;
   src?: string;
   alt?: string;
-  style?: ImageStyleProperties;
 }
 
 // Columns
