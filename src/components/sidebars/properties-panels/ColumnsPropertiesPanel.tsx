@@ -7,10 +7,13 @@ import Offsets from "./properties-blocks/Offsets";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
 import { GridProperties } from "@/types/block";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ColumnsPropertiesPanel({
   block,
   onChange,
+  onChangeBlockField,
 }: ColumnsPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
     useSaveProperties<GridProperties>(undefined);
@@ -25,7 +28,7 @@ export default function ColumnsPropertiesPanel({
 
   return (
     <div className="space-y-6">
-      {/* <div className="space-y-3">
+      <div className="space-y-3">
         <Label className="text-xs font-semibold text-foreground">Grid</Label>
         <div className="grid grid-cols-2 gap-2">
           <Input
@@ -34,12 +37,8 @@ export default function ColumnsPropertiesPanel({
             value={properties?.gap || ""}
             onChange={(e) => {
               const value = e.target.value;
-              // Сразу отражаем в UI и диспатчим наружу
               handleSaveProperty("gap", value);
-              onChange({
-                ...block,
-                properties: { ...properties, gap: value },
-              });
+              onChange({ gap: value });
             }}
           />
           <Input
@@ -51,15 +50,11 @@ export default function ColumnsPropertiesPanel({
             onChange={(e) => {
               const count = Number(e.target.value);
               setColumnCount(count);
-              onChange({
-                ...block,
-                columnsCount: count,
-                properties: { ...properties },
-              });
+              onChangeBlockField({ columnsCount: count });
             }}
           />
         </div>
-      </div> */}
+      </div>
 
       <Colors
         block={block}

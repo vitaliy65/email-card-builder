@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { PropertiesBlockProps } from "@/types/properties-panels";
 import { ensurePx } from "@/lib/utils";
 import { Label } from "@radix-ui/react-label";
-import React, { useEffect } from "react";
+import React from "react";
 import OffsetEachSide from "./offset/OffsetEachSide";
 import OffsetSwitch from "./offset/OffsetSwitch";
 import useOffset from "@/hooks/panel-components/useOffset";
@@ -13,28 +13,24 @@ export default function Offsets({
   properties,
   handleSaveProperty,
 }: PropertiesBlockProps) {
+  // useOffset теперь не содержит локального состояния, и только парсит-генерирует значения из properties
   const {
     enabledPaddingForEachSide,
     enabledMarginForEachSide,
-    handleSwitchPaddingMode,
-    handleSwitchMarginMode,
     perSidePadding,
     perSideMargin,
+    handleSwitchPaddingMode,
+    handleSwitchMarginMode,
     handleChangePadding,
     handleChangeMargin,
-    toStringMargin,
     toStringPadding,
-  } = useOffset(properties);
+    toStringMargin,
+  } = useOffset(properties, {
+    onChange,
+    handleSaveProperty,
+  });
 
-  useEffect(() => {
-    handleSaveProperty("padding", toStringPadding());
-    onChange({ padding: toStringPadding() });
-  }, [perSidePadding]);
-
-  useEffect(() => {
-    handleSaveProperty("margin", toStringMargin());
-    onChange({ margin: toStringMargin() });
-  }, [perSideMargin]);
+  if (!properties) return null;
 
   return (
     <div className="space-y-3">
@@ -51,7 +47,15 @@ export default function Offsets({
           {enabledPaddingForEachSide ? (
             <OffsetEachSide
               values={perSidePadding}
-              onChange={handleChangePadding}
+              onChange={(side, value) => {
+                handleChangePadding(side, value);
+                const paddingString = toStringPadding({
+                  ...perSidePadding,
+                  [side]: value,
+                });
+                handleSaveProperty("padding", paddingString);
+                onChange({ padding: paddingString });
+              }}
             />
           ) : (
             <Input
@@ -77,7 +81,15 @@ export default function Offsets({
           {enabledMarginForEachSide ? (
             <OffsetEachSide
               values={perSideMargin}
-              onChange={handleChangeMargin}
+              onChange={(side, value) => {
+                handleChangeMargin(side, value);
+                const marginString = toStringMargin({
+                  ...perSideMargin,
+                  [side]: value,
+                });
+                handleSaveProperty("margin", marginString);
+                onChange({ margin: marginString });
+              }}
             />
           ) : (
             <Input

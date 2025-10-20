@@ -51,5 +51,4 @@ export type ButtonPropertiesPanelProps = BaseFieldPanelProps<ButtonBlockItem>;
 export type ImagePropertiesPanelProps = BaseFieldPanelProps<ImageBlockItem>;
 export type DividerPropertiesPanelProps = BasePropertiesPanelProps<BlockItem>;
 export type SpacerPropertiesPanelProps = BasePropertiesPanelProps<BlockItem>;
-export type ColumnsPropertiesPanelProps =
-  BasePropertiesPanelProps<ColumnsBlockItem>;
+export type ColumnsPropertiesPanelProps = BaseFieldPanelProps<ColumnsBlockItem>;

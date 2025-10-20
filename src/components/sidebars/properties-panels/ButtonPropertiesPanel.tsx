@@ -27,6 +27,8 @@ export default function ButtonPropertiesPanel({
     setFields(block);
   }, [block.uuid]);
 
+  if (!properties) return;
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">

@@ -125,6 +125,7 @@ export function PropertiesPanel() {
           <ColumnsPropertiesPanel
             block={selectedBlock as ColumnsBlockItem}
             onChange={onChange}
+            onChangeBlockField={onChangeBlockField}
           />
         );
       case BlockTypes.link:
