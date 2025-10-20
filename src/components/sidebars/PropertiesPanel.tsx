@@ -19,6 +19,7 @@ import {
 } from "@/types/block";
 import dynamic from "next/dynamic";
 import LinkPropertiesPanel from "./properties-panels/LinkPropertiesPanel";
+import { useCallback } from "react";
 
 const TextPropertiesPanel = dynamic(
   () => import("@/components/sidebars/properties-panels/TextPropertiesPanel")
@@ -46,28 +47,34 @@ export function PropertiesPanel() {
   const dispatch = useAppDispatch();
   const { selectedBlock } = useAppSelector((s) => s.blocks);
 
-  const renderPanel = () => {
-    if (!selectedBlock) return null;
-
-    // Универсальный onChange: обновляет свойства без перезаписи всего объекта properties
-    const onChange = <T extends GeneralBlockProperties>(props: Partial<T>) => {
+  const onChange = useCallback(
+    <T extends GeneralBlockProperties>(props: Partial<T>) => {
+      if (!selectedBlock) return null;
       dispatch(
         updateBlockProperties({
           uuid: selectedBlock.uuid,
           updatedProperties: props,
         })
       );
-    };
+    },
+    [dispatch, selectedBlock?.uuid]
+  );
 
-    const onChangeBlockField = <T extends BlockItem>(props: Partial<T>) => {
+  const onChangeBlockField = useCallback(
+    <T extends BlockItem>(props: Partial<T>) => {
+      if (!selectedBlock) return null;
       dispatch(
         updateBlockField({
           uuid: selectedBlock.uuid,
           updatedField: props,
         })
       );
-    };
+    },
+    [dispatch, selectedBlock?.uuid]
+  );
 
+  const renderPanel = () => {
+    if (!selectedBlock) return null;
     switch (selectedBlock.type) {
       case BlockTypes.text:
         return (
