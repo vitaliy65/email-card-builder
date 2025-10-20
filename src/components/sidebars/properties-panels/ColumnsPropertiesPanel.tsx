@@ -42,13 +42,23 @@ export default function ColumnsPropertiesPanel({
             }}
           />
           <Input
-            placeholder="0"
+            placeholder="1"
             className="bg-background border-input"
             type="number"
             value={columnCount ?? ""}
             min={1}
+            max={4}
             onChange={(e) => {
-              const count = Number(e.target.value);
+              let count = Number(e.target.value);
+              if (count > 4) count = 4;
+              if (count < 1) count = 1;
+              setColumnCount(count);
+              onChangeBlockField({ columnsCount: count });
+            }}
+            onBlur={(e) => {
+              let count = Number(e.target.value);
+              if (isNaN(count) || count < 1) count = 1;
+              if (count > 4) count = 4;
               setColumnCount(count);
               onChangeBlockField({ columnsCount: count });
             }}

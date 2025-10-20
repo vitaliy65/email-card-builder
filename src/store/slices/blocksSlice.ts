@@ -273,7 +273,7 @@ const blocksSlice = createSlice({
         columnIndex: string;
       }>
     ) => {
-      const { block, columnBoxIndex, columnIndex } = action.payload;
+      const { block, columnBoxIndex } = action.payload;
 
       // Находим блок колонок по UUID
       const columnBlock = state.canvasBlocks.find(
@@ -285,34 +285,29 @@ const blocksSlice = createSlice({
         return;
       }
 
-      // Удаляем инкремент columnsCount, она должна соответствовать длине массива columns
-
       // Инициализируем columns если их нет
       if (!columnBlock.columns) {
         columnBlock.columns = [];
       }
 
-      // Находим колонку по индексу
-      const columnToUpdate = columnBlock.columns.find(
-        (col) => col.id === columnIndex
-      );
+      // Добавляем новую колонку если её нет
+      columnBlock.columns.push({
+        content: block.content,
+      });
+    },
 
-      if (columnToUpdate) {
-        // Обновляем существующую колонку
-        columnToUpdate.content = block.content;
-      } else {
-        // Добавляем новую колонку если её нет
-        columnBlock.columns.push({
-          id: columnIndex,
-          content: block.content,
-        });
-      }
+    addBlankColumn: (
+      state,
+      action: PayloadAction<{ columnBoxUUID: string }>
+    ) => {
+      const { columnBoxUUID } = action.payload;
 
-      // columnsCount всегда соответствует длине массива columns
-      columnBlock.columnsCount = columnBlock.columns.length;
+      // Находим блок колонок по UUID
+      const columnBlock = state.canvasBlocks.find(
+        (b) => b.uuid === columnBoxUUID
+      ) as (CanvasBlock & ColumnsBlockItem) | undefined;
 
-      console.log({ ...columnBlock });
-      console.log(columnBlock.columns.map((b) => b));
+      columnBlock?.columns?.push({ content: null });
     },
   },
 });

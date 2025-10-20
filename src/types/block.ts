@@ -108,7 +108,6 @@ export interface ColumnsBlockItem extends BlockItem {
 }
 
 export interface Column {
-  id: string;
   content?: BlockItem | null;
 }
 

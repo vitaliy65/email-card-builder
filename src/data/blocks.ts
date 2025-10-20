@@ -150,7 +150,7 @@ export const blockDefaults: Record<
     id: BlockTypes.columns,
     uuid: "",
     type: BlockTypes.columns,
-    columnsCount: 0,
+    columnsCount: 1,
     columns: [],
     properties: {
       padding: "0px 0px 0px 0px",
@@ -161,7 +161,7 @@ export const blockDefaults: Record<
       borderStyle: "solid",
       width: "100%",
       height: "auto",
-      display: "block",
+      display: "grid",
       gap: "12px",
       zIndex: "10",
       background: "#ffffff",
