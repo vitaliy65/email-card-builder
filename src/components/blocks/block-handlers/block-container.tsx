@@ -136,7 +136,11 @@ export default function BlockContainer({
                 setIsHovered(false);
                 setIsLeaved(true);
               }}
-              onClick={handleSelectBlock}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSelectBlock();
+              }}
             >
               <div
                 className={`w-full h-full

@@ -2,10 +2,14 @@
 import { Fragment } from "react";
 import { Card } from "@/components/ui/card";
 import DroppableBlock from "../blocks/DroppableBlock";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import ChangPosBlock from "../blocks/block-handlers/ChangPosBlock";
 import { useBlockRenderer, useCanvasControls } from "@/hooks";
 import BlockContainer from "../blocks/block-handlers/block-container";
+import {
+  selectBlock,
+  setSelectedColumnChildUUID,
+} from "@/store/slices/blocksSlice";
 
 export function BuilderCanvas() {
   // Используем хук для управления canvas вместо локального состояния
@@ -22,6 +26,7 @@ export function BuilderCanvas() {
     persistSettings: true, // Сохранять настройки в localStorage
     storageKey: "email-builder-canvas-settings",
   });
+  const dispatch = useAppDispatch();
 
   // Используем хук для рендеринга блоков
   const { renderBlocks } = useBlockRenderer();
@@ -38,7 +43,14 @@ export function BuilderCanvas() {
   }
 
   return (
-    <div className="flex-1 bg-background overflow-auto">
+    <div
+      className="flex-1 bg-background overflow-auto"
+      // need for removing selection of column child blocks
+      onClick={() => {
+        dispatch(setSelectedColumnChildUUID({ uuid: null }));
+        dispatch(selectBlock(null));
+      }}
+    >
       <div className="p-8 flex items-start justify-center h-full">
         <div className="w-full h-full max-w-3xl">
           {/* Canvas toolbar */}
