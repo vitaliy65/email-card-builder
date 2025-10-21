@@ -18,6 +18,8 @@ interface BlocksState {
   selectedBlock: CanvasBlock | null; // uuid выбранного блока
   grabingBlockUUID: string | null;
   hoveredBlockId: string | null;
+  selectedColumnBlockUUID: string | null;
+  selectedColumnChildBlockUUID: string | null;
 }
 
 const initialState: BlocksState = {
@@ -25,6 +27,8 @@ const initialState: BlocksState = {
   selectedBlock: null,
   hoveredBlockId: null,
   grabingBlockUUID: null,
+  selectedColumnBlockUUID: null,
+  selectedColumnChildBlockUUID: null,
 };
 
 const blocksSlice = createSlice({
@@ -245,6 +249,41 @@ const blocksSlice = createSlice({
       state.selectedBlock = selectedBlock;
     },
 
+    selectBlockFromColumn: (
+      state,
+      action: PayloadAction<{ columnUUID: string; idx: number }>
+    ) => {
+      const { columnUUID, idx } = action.payload;
+
+      const selectedBlock = state.canvasBlocks.findLast(
+        (block) => block.uuid === columnUUID
+      ) as ColumnsBlockItem;
+
+      let column = null;
+
+      if (selectedBlock.columns) {
+        column = selectedBlock.columns[idx];
+      }
+
+      if (column && column.content) {
+        state.selectedBlock = column.content;
+      }
+    },
+
+    setSelectedColumnUUID: (
+      state,
+      action: PayloadAction<{ uuid: string | null }>
+    ) => {
+      state.selectedColumnBlockUUID = action.payload.uuid;
+    },
+
+    setSelectedColumnChildUUID: (
+      state,
+      action: PayloadAction<{ uuid: string | null }>
+    ) => {
+      state.selectedColumnChildBlockUUID = action.payload.uuid;
+    },
+
     // Сброс Canvas
     resetCanvas: (state) => {
       state.canvasBlocks = [];
@@ -302,6 +341,81 @@ const blocksSlice = createSlice({
       }
     },
 
+    updateColumnChildProperties: <T extends GeneralBlockProperties>(
+      state: BlocksState,
+      action: PayloadAction<{
+        updatedProperties: Partial<T>;
+      }>
+    ) => {
+      const { updatedProperties } = action.payload;
+
+      // Найти блок колонок среди canvasBlocks по выбранному UUID
+      const columnBlock = state.canvasBlocks.find(
+        (b) => b.uuid === state.selectedColumnBlockUUID
+      ) as ColumnsBlockItem | undefined;
+
+      if (!columnBlock || !Array.isArray(columnBlock.columns)) return;
+
+      // Найти индекс и объект колонки с нужным детским uuid
+      const idx = columnBlock.columns.findIndex(
+        (c) => c.content?.uuid === state.selectedColumnChildBlockUUID
+      );
+
+      if (idx === -1) return;
+
+      const colChild = columnBlock.columns[idx];
+      if (!colChild || !colChild.content) return;
+
+      // Обновить свойства выбранного дочернего блока в колонке
+      columnBlock.columns[idx] = {
+        ...colChild,
+        content: {
+          ...colChild.content,
+          properties: {
+            ...colChild.content.properties,
+            ...updatedProperties,
+          },
+        },
+      };
+    },
+
+    // Для обновления любых других полей (кроме properties) дочернего блока в колонке
+    updateColumnChildFields: <T extends BlockItem>(
+      state: BlocksState,
+      action: PayloadAction<{
+        updatedField: Partial<T>;
+      }>
+    ) => {
+      const { updatedField } = action.payload;
+
+      // Найти блок колонок среди canvasBlocks по выбранному UUID
+      const columnBlock = state.canvasBlocks.find(
+        (b) => b.uuid === state.selectedColumnBlockUUID
+      ) as ColumnsBlockItem | undefined;
+
+      if (!columnBlock || !Array.isArray(columnBlock.columns)) return;
+
+      // Найти индекс и объект колонки с нужным детским uuid
+      const idx = columnBlock.columns.findIndex(
+        (c) => c.content?.uuid === state.selectedColumnChildBlockUUID
+      );
+
+      if (idx === -1) return;
+
+      const colChild = columnBlock.columns[idx];
+      if (!colChild || !colChild.content) return;
+
+      // Обновить поля выбранного дочернего блока в колонке (кроме properties)
+      columnBlock.columns[idx] = {
+        ...colChild,
+        content: {
+          ...colChild.content,
+          ...updatedField, // properties не трогаем, только другие поля
+          properties: colChild.content.properties,
+        },
+      };
+    },
+
     addBlankColumn: (
       state,
       action: PayloadAction<{ columnBoxUUID: string }>
@@ -331,5 +445,10 @@ export const {
   updateCanvasColumnBlock,
   setHoveredBlockId,
   updateBlockField,
+  selectBlockFromColumn,
+  setSelectedColumnUUID,
+  setSelectedColumnChildUUID,
+  updateColumnChildProperties,
+  updateColumnChildFields,
 } = blocksSlice.actions;
 export default blocksSlice.reducer;

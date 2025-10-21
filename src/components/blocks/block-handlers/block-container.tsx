@@ -14,17 +14,22 @@ import {
   removeBlock,
   selectBlock,
   setGrabbingBlock,
+  setSelectedColumnChildUUID,
+  setSelectedColumnUUID,
 } from "@/store/slices/blocksSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { BlockTypes } from "@/types/block";
 
 export default function BlockContainer({
   children,
   id,
   uuid,
+  type,
 }: {
   children: ReactNode;
   id: string;
   uuid: string;
+  type: BlockTypes;
 }) {
   const [isSelected, setIsSelected] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -46,6 +51,12 @@ export default function BlockContainer({
   const handleSelectBlock = () => {
     try {
       dispatch(selectBlock(uuid));
+      if (type === BlockTypes.columns)
+        dispatch(setSelectedColumnUUID({ uuid }));
+      else {
+        dispatch(setSelectedColumnUUID({ uuid: null }));
+        dispatch(setSelectedColumnChildUUID({ uuid: null }));
+      }
       setIsSelected(true);
       setIsLeaved(false);
     } catch {

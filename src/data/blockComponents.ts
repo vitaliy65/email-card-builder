@@ -1,5 +1,5 @@
 import React from "react";
-import { BlockTypes } from "@/types/block";
+import { BlockTypes, LinkBlockItem } from "@/types/block";
 import {
   BlockItem,
   TextBlockItem,
@@ -27,6 +27,7 @@ type ImageBlockComponent = React.ComponentType<{ props?: ImageBlockItem }>;
 type DividerBlockComponent = React.ComponentType<{ props?: BlockItem }>;
 type SpacerBlockComponent = React.ComponentType<{ props?: BlockItem }>;
 type ColumnsBlockComponent = React.ComponentType<{ props?: ColumnsBlockItem }>;
+type LinkBlockComponent = React.ComponentType<{ props?: LinkBlockItem }>;
 
 // Union тип для всех компонентов блоков
 export type BlockComponent =
@@ -36,7 +37,8 @@ export type BlockComponent =
   | ImageBlockComponent
   | DividerBlockComponent
   | SpacerBlockComponent
-  | ColumnsBlockComponent;
+  | ColumnsBlockComponent
+  | LinkBlockComponent;
 
 // Record для хранения компонентов блоков
 export const blockComponents: Record<BlockTypes, BlockComponent> = {

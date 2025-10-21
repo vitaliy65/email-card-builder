@@ -5,7 +5,6 @@ import { ColumnsBlockItem, BlockTypes } from "@/types/block";
 import { ColumnBlockDefault } from "@/data/blocks";
 import { blockComponents } from "@/data/blockComponents";
 import DroppableBlock from "./DroppableBlock";
-import BlockContainer from "./block-handlers/block-container";
 import ColumnBlockContainer from "./block-handlers/block-column-container";
 
 export default function ColumnsBlock({
@@ -22,7 +21,7 @@ export default function ColumnsBlock({
     >
       {props.columns &&
         props.columns.map((col, idx) => (
-          <div key={`col_${props.uuid}_${idx}`}>
+          <div key={`col_${props.uuid}_${idx}`} className="flex">
             {col.content ? (
               (() => {
                 const blockType = col.content.type as BlockTypes;
@@ -30,11 +29,11 @@ export default function ColumnsBlock({
 
                 if (!BlockComponent) return null;
 
-                console.log(col.content?.uuid, col.content?.id);
                 return (
                   <ColumnBlockContainer
+                    columnUUID={props.uuid}
                     uuid={col.content?.uuid}
-                    id={col.content?.id}
+                    idx={idx}
                   >
                     <BlockComponent props={col.content} />
                   </ColumnBlockContainer>

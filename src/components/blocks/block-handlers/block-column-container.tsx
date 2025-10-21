@@ -1,106 +1,82 @@
-import Draggable from "@/components/block-states/Draggable";
-import { Trash2 } from "lucide-react";
-import React, {
-  ReactNode,
-  RefObject,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
-import MoveHandle from "./MoveHandle";
-import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip";
-import { TooltipContent } from "@radix-ui/react-tooltip";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  removeBlock,
-  selectBlock,
-  setGrabbingBlock,
+  selectBlockFromColumn,
+  setSelectedColumnChildUUID,
 } from "@/store/slices/blocksSlice";
-import { useAppDispatch } from "@/store/hooks";
 
 export default function ColumnBlockContainer({
   children,
-  id,
   uuid,
-  isColumnBlock,
+  idx,
+  columnUUID,
 }: {
   children: ReactNode;
-  id: string;
   uuid: string;
-  isColumnBlock?: boolean;
+  idx: number;
+  columnUUID: string;
 }) {
-  const [isSelected, setIsSelected] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const handleRef = useRef<HTMLDivElement>(null);
+  const { selectedColumnChildBlockUUID, selectedColumnBlockUUID } =
+    useAppSelector((state) => state.blocks);
+
+  // Блок считается выбранным, если его uuid совпадает с выбранным дочерним uuid И его colunaUUID - с выбранной колонкой
+  const isSelected =
+    selectedColumnChildBlockUUID === uuid &&
+    selectedColumnBlockUUID === columnUUID;
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLeaved, setIsLeaved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
 
-  const handleDelete = (e: React.MouseEvent) => {
+  // При клике: выбираем и блок в колонке, и УСТАНАВЛИВАЕМ оба uuid (блока и колонки)
+  const handleSelectBlock = (e: React.MouseEvent) => {
     e.stopPropagation();
-    dispatch(removeBlock(uuid));
-  };
-
-  // Функция вызывается при начале drag (через Draggable)
-  const handleDragStart = () => {
-    dispatch(setGrabbingBlock(uuid));
-  };
-
-  const handleSelectBlock = () => {
-    try {
-      dispatch(selectBlock(uuid));
-      setIsSelected(true);
-    } catch {
-      console.error("Cant select this block! :(");
-    }
-  };
-
-  // Функция вызывается при окончании drag (через Draggable)
-  // Добавляем задержку при завершении перетаскивания
-  const handleDragEnd = () => {
-    setTimeout(() => {
-      dispatch(setGrabbingBlock(null));
-    }, 150); // Задержка 150 мс
+    dispatch(selectBlockFromColumn({ columnUUID, idx }));
+    dispatch(setSelectedColumnChildUUID({ uuid }));
   };
 
   useEffect(() => {
-    if (!isSelected) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsSelected(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside, true);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside, true);
-    };
+    // Когда выбранный uuid поменялся снаружи — снимаем ховер
+    setIsHovered(false);
+    setIsLeaved(false);
   }, [isSelected]);
 
   if (isSelected)
     return (
-      <div ref={containerRef} className="relative">
-        <div>
-          <div className="min-h-[32px]">{children}</div>
-          <div
-            className={`w-full h-full
-              ${hovered ? "bg-blue-500/20 border-2 border-blue-400" : ""} 
-              transition-colors pointer-events-none`}
-          ></div>
-        </div>
+      <div
+        ref={containerRef}
+        className="flex relative ring-2 ring-blue-600 w-full min-h-[32px]"
+      >
+        {children}
       </div>
     );
 
   return (
-    <div>
-      <div className="min-h-[32px]">{children}</div>
+    <div className="flex relative group w-full min-h-[32px]">
+      {children}
       <div
-        className={`w-full h-full
-              ${hovered ? "bg-blue-500/20 border-2 border-blue-400" : ""} 
+        className="absolute inset-0"
+        onMouseEnter={() => {
+          setIsHovered(true);
+          setIsLeaved(false);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setIsLeaved(true);
+        }}
+        onClick={handleSelectBlock}
+      >
+        <div
+          className={`w-full h-full
+              ${
+                isHovered && !isLeaved
+                  ? "bg-blue-500/20 border-2 border-blue-400"
+                  : ""
+              } 
               transition-colors pointer-events-none`}
-      ></div>
+        ></div>
+      </div>
     </div>
   );
 }

@@ -115,7 +115,11 @@ export function BuilderCanvas() {
 
                     return (
                       <Fragment key={block.uuid}>
-                        <BlockContainer uuid={block.uuid} id={block.id}>
+                        <BlockContainer
+                          uuid={block.uuid}
+                          id={block.id}
+                          type={block.type}
+                        >
                           {renderedBlock}
                         </BlockContainer>
                         <ChangPosBlock

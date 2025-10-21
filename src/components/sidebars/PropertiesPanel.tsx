@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   updateBlockField,
   updateBlockProperties,
+  updateColumnChildFields,
+  updateColumnChildProperties,
 } from "@/store/slices/blocksSlice";
 import {
   BlockTypes,
@@ -45,17 +47,27 @@ const ColumnsPropertiesPanel = dynamic(
 
 export function PropertiesPanel() {
   const dispatch = useAppDispatch();
-  const { selectedBlock } = useAppSelector((s) => s.blocks);
+  const { selectedBlock, selectedColumnChildBlockUUID } = useAppSelector(
+    (s) => s.blocks
+  );
 
   const onChange = useCallback(
     <T extends GeneralBlockProperties>(props: Partial<T>) => {
       if (!selectedBlock) return null;
-      dispatch(
-        updateBlockProperties({
-          uuid: selectedBlock.uuid,
-          updatedProperties: props,
-        })
-      );
+      if (selectedColumnChildBlockUUID) {
+        dispatch(
+          updateColumnChildProperties({
+            updatedProperties: props,
+          })
+        );
+      } else {
+        dispatch(
+          updateBlockProperties({
+            uuid: selectedBlock.uuid,
+            updatedProperties: props,
+          })
+        );
+      }
     },
     [dispatch, selectedBlock?.uuid]
   );
@@ -63,12 +75,21 @@ export function PropertiesPanel() {
   const onChangeBlockField = useCallback(
     <T extends BlockItem>(props: Partial<T>) => {
       if (!selectedBlock) return null;
-      dispatch(
-        updateBlockField({
-          uuid: selectedBlock.uuid,
-          updatedField: props,
-        })
-      );
+
+      if (selectedColumnChildBlockUUID) {
+        dispatch(
+          updateColumnChildFields({
+            updatedField: props,
+          })
+        );
+      } else {
+        dispatch(
+          updateBlockField({
+            uuid: selectedBlock.uuid,
+            updatedField: props,
+          })
+        );
+      }
     },
     [dispatch, selectedBlock?.uuid]
   );
