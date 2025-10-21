@@ -273,7 +273,7 @@ const blocksSlice = createSlice({
         columnIndex: string;
       }>
     ) => {
-      const { block, columnBoxIndex } = action.payload;
+      const { block, columnBoxIndex, columnIndex } = action.payload;
 
       // Находим блок колонок по UUID
       const columnBlock = state.canvasBlocks.find(
@@ -290,10 +290,16 @@ const blocksSlice = createSlice({
         columnBlock.columns = [];
       }
 
-      // Добавляем новую колонку если её нет
-      columnBlock.columns.push({
-        content: block.content,
-      });
+      // Обновляем существующую колонку по индексу, вместо добавления новой
+      const idx = Number(columnIndex);
+      if (!isNaN(idx) && idx >= 0 && idx < columnBlock.columns.length) {
+        columnBlock.columns[idx] = {
+          ...columnBlock.columns[idx],
+          content: block.content,
+        };
+      } else {
+        console.error("Invalid column index:", columnIndex);
+      }
     },
 
     addBlankColumn: (

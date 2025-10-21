@@ -24,7 +24,57 @@ export default function ColumnsPropertiesPanel({
   useEffect(() => {
     setColumnCount(block.columnsCount);
     setProperties(block.properties);
-  }, [block.columnsCount, block.uuid]);
+  }, [block.uuid, columnCount]);
+
+  // Вынесенный обработчик для изменения количества колонок
+  function handleColumnCountChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let count = Number(e.target.value);
+    if (isNaN(count) || count < 1) count = 1;
+    if (count > 4) count = 4;
+    setColumnCount(count);
+
+    // Синхронизируем массив columns с count
+    let newColumns = Array.isArray(block.columns) ? [...block.columns] : [];
+    if (count > newColumns.length) {
+      // Добавляем новые колонки с пустым контентом
+      for (let i = newColumns.length; i < count; i++) {
+        newColumns.push({ content: null });
+      }
+    } else if (count < newColumns.length) {
+      // Удаляем лишние колонки
+      newColumns = newColumns.slice(0, count);
+    }
+
+    // Передаём и новое columns, и columnsCount
+    onChangeBlockField({ columns: newColumns, columnsCount: count });
+  }
+
+  // Вынесенный обработчик для блюра инпута количества колонок
+  function handleColumnCountBlur(e: React.FocusEvent<HTMLInputElement>) {
+    let count = Number(e.target.value);
+    if (isNaN(count) || count < 1) count = 1;
+    if (count > 4) count = 4;
+    setColumnCount(count);
+
+    // Синхронизируем массив columns с count
+    let newColumns = Array.isArray(block.columns) ? [...block.columns] : [];
+    if (count > newColumns.length) {
+      for (let i = newColumns.length; i < count; i++) {
+        newColumns.push({ content: null });
+      }
+    } else if (count < newColumns.length) {
+      newColumns = newColumns.slice(0, count);
+    }
+
+    onChangeBlockField({ columns: newColumns, columnsCount: count });
+  }
+
+  // Вынесенный обработчик для изменения gap
+  function handleGapChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+    handleSaveProperty("gap", value);
+    onChange({ gap: value });
+  }
 
   return (
     <div className="space-y-6">
@@ -35,11 +85,7 @@ export default function ColumnsPropertiesPanel({
             placeholder="12px"
             className="bg-background border-input"
             value={properties?.gap || ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              handleSaveProperty("gap", value);
-              onChange({ gap: value });
-            }}
+            onChange={handleGapChange}
           />
           <Input
             placeholder="1"
@@ -48,20 +94,8 @@ export default function ColumnsPropertiesPanel({
             value={columnCount ?? ""}
             min={1}
             max={4}
-            onChange={(e) => {
-              let count = Number(e.target.value);
-              if (count > 4) count = 4;
-              if (count < 1) count = 1;
-              setColumnCount(count);
-              onChangeBlockField({ columnsCount: count });
-            }}
-            onBlur={(e) => {
-              let count = Number(e.target.value);
-              if (isNaN(count) || count < 1) count = 1;
-              if (count > 4) count = 4;
-              setColumnCount(count);
-              onChangeBlockField({ columnsCount: count });
-            }}
+            onChange={handleColumnCountChange}
+            onBlur={handleColumnCountBlur}
           />
         </div>
       </div>
