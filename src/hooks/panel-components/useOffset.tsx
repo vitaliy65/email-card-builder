@@ -1,4 +1,4 @@
-import { GeneralBlockProperties } from "@/types/block";
+import { BlockItem } from "@/types/block";
 
 export interface PerSideProps {
   top: string;
@@ -8,7 +8,7 @@ export interface PerSideProps {
 }
 
 interface UseOffsetOptions {
-  onChange?: (v: Partial<GeneralBlockProperties>) => void;
+  onChange?: (v: Partial<BlockItem>) => void;
   handleSaveProperty: (key: string, property: string | number) => void;
 }
 
@@ -36,7 +36,7 @@ function toStringOffset(p: PerSideProps): string {
 }
 
 export default function useOffset(
-  properties: GeneralBlockProperties | undefined,
+  properties: React.CSSProperties | undefined,
   options?: UseOffsetOptions
 ) {
   // "Enabled for each side" is considered enabled if the padding (or margin) is 4-part value.
@@ -60,27 +60,39 @@ export default function useOffset(
   );
 
   const handleSwitchPaddingMode = () => {
-    // If currently enabled (has 4 values), switch to shorthand (disable)
     if (enabledPaddingForEachSide) {
-      // default to "12px 24px"
       options?.handleSaveProperty?.("padding", "12px 24px");
-      options?.onChange?.({ padding: "12px 24px" });
+      options?.onChange?.({
+        properties: {
+          ...properties,
+          padding: "12px 24px",
+        },
+      });
     } else {
-      // go to per side, convert existing value to all sides same value
       const val =
         typeof properties?.padding === "string"
           ? properties.padding.split(" ")[0]?.replace("px", "") || "0"
           : "0";
       const toVal = `${val}px ${val}px ${val}px ${val}px`;
       options?.handleSaveProperty?.("padding", toVal);
-      options?.onChange?.({ padding: toVal });
+      options?.onChange?.({
+        properties: {
+          ...properties,
+          padding: toVal,
+        },
+      });
     }
   };
 
   const handleSwitchMarginMode = () => {
     if (enabledMarginForEachSide) {
       options?.handleSaveProperty?.("margin", "0px");
-      options?.onChange?.({ margin: "0px" });
+      options?.onChange?.({
+        properties: {
+          ...properties,
+          margin: "0px",
+        },
+      });
     } else {
       const val =
         typeof properties?.margin === "string"
@@ -88,23 +100,37 @@ export default function useOffset(
           : "0";
       const toVal = `${val}px ${val}px ${val}px ${val}px`;
       options?.handleSaveProperty?.("margin", toVal);
-      options?.onChange?.({ margin: toVal });
+      options?.onChange?.({
+        properties: {
+          ...properties,
+          margin: toVal,
+        },
+      });
     }
   };
 
   const handleChangePadding = (key: keyof PerSideProps, value: string) => {
-    // Update only that side
     const updated: PerSideProps = { ...perSidePadding, [key]: value };
     const val = toStringOffset(updated);
     options?.handleSaveProperty?.("padding", val);
-    options?.onChange?.({ padding: val });
+    options?.onChange?.({
+      properties: {
+        ...properties,
+        padding: val,
+      },
+    });
   };
 
   const handleChangeMargin = (key: keyof PerSideProps, value: string) => {
     const updated: PerSideProps = { ...perSideMargin, [key]: value };
     const val = toStringOffset(updated);
     options?.handleSaveProperty?.("margin", val);
-    options?.onChange?.({ margin: val });
+    options?.onChange?.({
+      properties: {
+        ...properties,
+        margin: val,
+      },
+    });
   };
 
   const toStringPadding = (custom?: PerSideProps) =>

@@ -1,27 +1,15 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { Link, Palette } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  updateBlockField,
-  updateBlockProperties,
-  updateColumnChildFields,
-  updateColumnChildProperties,
-} from "@/store/slices/blocksSlice";
+import { Palette } from "lucide-react";
+import dynamic from "next/dynamic";
+import LinkPropertiesPanel from "./properties-panels/LinkPropertiesPanel";
 import {
   BlockTypes,
-  TextBlockItem,
-  HeadingBlockItem,
-  ButtonBlockItem,
   ImageBlockItem,
   ColumnsBlockItem,
   BlockItem,
-  GeneralBlockProperties,
-  LinkBlockItem,
 } from "@/types/block";
-import dynamic from "next/dynamic";
-import LinkPropertiesPanel from "./properties-panels/LinkPropertiesPanel";
-import { useCallback } from "react";
+import { usePropertiesPanel } from "@/hooks/properties-panels/usePropertiesPanel";
 
 const TextPropertiesPanel = dynamic(
   () => import("@/components/sidebars/properties-panels/TextPropertiesPanel")
@@ -46,53 +34,7 @@ const ColumnsPropertiesPanel = dynamic(
 );
 
 export function PropertiesPanel() {
-  const dispatch = useAppDispatch();
-  const { selectedBlock, selectedColumnChildBlockUUID } = useAppSelector(
-    (s) => s.blocks
-  );
-
-  const onChange = useCallback(
-    <T extends GeneralBlockProperties>(props: Partial<T>) => {
-      if (!selectedBlock) return null;
-      if (selectedColumnChildBlockUUID) {
-        dispatch(
-          updateColumnChildProperties({
-            updatedProperties: props,
-          })
-        );
-      } else {
-        dispatch(
-          updateBlockProperties({
-            uuid: selectedBlock.uuid,
-            updatedProperties: props,
-          })
-        );
-      }
-    },
-    [dispatch, selectedBlock?.uuid]
-  );
-
-  const onChangeBlockField = useCallback(
-    <T extends BlockItem>(props: Partial<T>) => {
-      if (!selectedBlock) return null;
-
-      if (selectedColumnChildBlockUUID) {
-        dispatch(
-          updateColumnChildFields({
-            updatedField: props,
-          })
-        );
-      } else {
-        dispatch(
-          updateBlockField({
-            uuid: selectedBlock.uuid,
-            updatedField: props,
-          })
-        );
-      }
-    },
-    [dispatch, selectedBlock?.uuid]
-  );
+  const { selectedBlock, onChangeBlock, onChangeGrid } = usePropertiesPanel();
 
   const renderPanel = () => {
     if (!selectedBlock) return null;
@@ -100,61 +42,57 @@ export function PropertiesPanel() {
       case BlockTypes.text:
         return (
           <TextPropertiesPanel
-            block={selectedBlock as TextBlockItem}
-            onChange={onChange}
+            block={selectedBlock as BlockItem}
+            onChange={onChangeBlock}
           />
         );
       case BlockTypes.heading:
         return (
           <HeadingPropertiesPanel
-            block={selectedBlock as HeadingBlockItem}
-            onChange={onChange}
+            block={selectedBlock as BlockItem}
+            onChange={onChangeBlock}
           />
         );
       case BlockTypes.button:
         return (
           <ButtonPropertiesPanel
-            block={selectedBlock as ButtonBlockItem}
-            onChange={onChange}
-            onChangeBlockField={onChangeBlockField}
+            block={selectedBlock as BlockItem}
+            onChange={onChangeBlock}
           />
         );
       case BlockTypes.image:
         return (
           <ImagePropertiesPanel
             block={selectedBlock as ImageBlockItem}
-            onChange={onChange}
-            onChangeBlockField={onChangeBlockField}
+            onChange={onChangeBlock}
           />
         );
       case BlockTypes.divider:
         return (
           <DividerPropertiesPanel
             block={selectedBlock as BlockItem}
-            onChange={onChange}
+            onChange={onChangeBlock}
           />
         );
       case BlockTypes.spacer:
         return (
           <SpacerPropertiesPanel
             block={selectedBlock as BlockItem}
-            onChange={onChange}
+            onChange={onChangeBlock}
           />
         );
       case BlockTypes.columns:
         return (
           <ColumnsPropertiesPanel
             block={selectedBlock as ColumnsBlockItem}
-            onChange={onChange}
-            onChangeBlockField={onChangeBlockField}
+            onChange={onChangeGrid}
           />
         );
       case BlockTypes.link:
         return (
           <LinkPropertiesPanel
-            block={selectedBlock as LinkBlockItem}
-            onChange={onChange}
-            onChangeBlockField={onChangeBlockField}
+            block={selectedBlock as BlockItem}
+            onChange={onChangeBlock}
           />
         );
       default:

@@ -1,28 +1,32 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  selectBlockFromColumn,
+  selectBlockFromGrid,
   setSelectedColumnChildUUID,
 } from "@/store/slices/blocksSlice";
+import { BlockItem } from "@/types/block";
 
 export default function ColumnBlockContainer({
   children,
-  uuid,
-  idx,
+  cell,
+  col_idx,
+  row_idx,
   columnUUID,
 }: {
   children: ReactNode;
-  uuid: string;
-  idx: number;
+  cell: BlockItem;
+  col_idx: number;
+  row_idx: number;
   columnUUID: string;
 }) {
-  const { selectedColumnChildBlockUUID, selectedColumnBlockUUID } =
-    useAppSelector((state) => state.blocks);
+  const { selectedGridChildData, selectedGridBlockUUID } = useAppSelector(
+    (state) => state.blocks
+  );
 
   // Блок считается выбранным, если его uuid совпадает с выбранным дочерним uuid И его colunaUUID - с выбранной колонкой
   const isSelected =
-    selectedColumnChildBlockUUID === uuid &&
-    selectedColumnBlockUUID === columnUUID;
+    selectedGridChildData?.cell?.uuid === cell.uuid &&
+    selectedGridBlockUUID === columnUUID;
 
   const [isHovered, setIsHovered] = useState(false);
   const [isLeaved, setIsLeaved] = useState(false);
@@ -32,8 +36,8 @@ export default function ColumnBlockContainer({
   // При клике: выбираем и блок в колонке, и УСТАНАВЛИВАЕМ оба uuid (блока и колонки)
   const handleSelectBlock = (e: React.MouseEvent) => {
     e.stopPropagation();
-    dispatch(selectBlockFromColumn({ columnUUID, idx }));
-    dispatch(setSelectedColumnChildUUID({ uuid }));
+    dispatch(selectBlockFromGrid({ col_idx, row_idx }));
+    dispatch(setSelectedColumnChildUUID({ cell, col_idx, row_idx }));
   };
 
   useEffect(() => {

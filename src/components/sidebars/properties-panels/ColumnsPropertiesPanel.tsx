@@ -5,97 +5,157 @@ import Borders from "./properties-blocks/Borders";
 import Sizes from "./properties-blocks/Sizes";
 import Offsets from "./properties-blocks/Offsets";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { GridProperties } from "@/types/block";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent, FocusEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GridElement } from "@/types/block";
+
+// Утилита для ограничения значения между min и max
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+// Синхронизировать gridElements двумерный массив (кол-во столбцов и строк)
+function syncGridElements(
+  gridElements: GridElement[][] | undefined,
+  columns: number,
+  rows: number
+) {
+  // Создаем копию или новую сетку
+  let newGrid: GridElement[][] = [];
+  if (Array.isArray(gridElements)) {
+    newGrid = gridElements.map((col) =>
+      Array.isArray(col) ? col.slice(0, rows) : []
+    );
+  }
+
+  // Убедимся в нужном количестве столбцов
+  while (newGrid.length < columns) {
+    newGrid.push(Array(rows).fill({ content: null }));
+  }
+
+  if (newGrid.length > columns) {
+    newGrid.length = columns;
+  }
+
+  // Убедимся в нужном количестве строк в каждом столбце
+  for (let c = 0; c < columns; c++) {
+    if (!newGrid[c]) newGrid[c] = [];
+    for (let r = 0; r < rows; r++) {
+      if (typeof newGrid[c][r] === "undefined") {
+        newGrid[c][r] = { content: null };
+      }
+    }
+    // Обрезаем лишние строки
+    if (newGrid[c].length > rows) newGrid[c].length = rows;
+  }
+
+  return newGrid;
+}
 
 export default function ColumnsPropertiesPanel({
   block,
   onChange,
-  onChangeBlockField,
 }: ColumnsPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GridProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
 
-  // Чтобы корректно поддерживать синхронизацию columnsCount при смене block
-  const [columnCount, setColumnCount] = useState(block.columnsCount);
+  const [columnCount, setColumnCount] = useState(block.columnsCount ?? 1);
+  const [rowsCount, setRowsCount] = useState(block.rowsCount ?? 1);
 
   useEffect(() => {
-    setColumnCount(block.columnsCount);
+    setColumnCount(block.columnsCount ?? 1);
+    setRowsCount(block.rowsCount ?? 1);
     setProperties(block.properties);
-  }, [block.uuid, columnCount]);
+  }, [block.uuid]);
 
-  // Вынесенный обработчик для изменения количества колонок
-  function handleColumnCountChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let count = Number(e.target.value);
-    if (isNaN(count) || count < 1) count = 1;
-    if (count > 4) count = 4;
-    setColumnCount(count);
+  // Обновить кол-во колонок/строк и gridElements
+  const handleChangeGrid = (newColCount: number, newRowCount: number) => {
+    // Ограничения
+    const colCount = clamp(newColCount, 1, 4);
+    const rowCount = clamp(newRowCount, 1, 4);
 
-    // Синхронизируем массив columns с count
-    let newColumns = Array.isArray(block.columns) ? [...block.columns] : [];
-    if (count > newColumns.length) {
-      // Добавляем новые колонки с пустым контентом
-      for (let i = newColumns.length; i < count; i++) {
-        newColumns.push({ content: null });
-      }
-    } else if (count < newColumns.length) {
-      // Удаляем лишние колонки
-      newColumns = newColumns.slice(0, count);
-    }
+    setColumnCount(colCount);
+    setRowsCount(rowCount);
 
-    // Передаём и новое columns, и columnsCount
-    onChangeBlockField({ columns: newColumns, columnsCount: count });
-  }
+    const newGridElements = syncGridElements(
+      block.gridElements,
+      colCount,
+      rowCount
+    );
 
-  // Вынесенный обработчик для блюра инпута количества колонок
-  function handleColumnCountBlur(e: React.FocusEvent<HTMLInputElement>) {
-    let count = Number(e.target.value);
-    if (isNaN(count) || count < 1) count = 1;
-    if (count > 4) count = 4;
-    setColumnCount(count);
+    // Передать изменения наружу
+    onChange({
+      ...block,
+      columnsCount: colCount,
+      rowsCount: rowCount,
+      gridElements: newGridElements,
+    });
+  };
 
-    // Синхронизируем массив columns с count
-    let newColumns = Array.isArray(block.columns) ? [...block.columns] : [];
-    if (count > newColumns.length) {
-      for (let i = newColumns.length; i < count; i++) {
-        newColumns.push({ content: null });
-      }
-    } else if (count < newColumns.length) {
-      newColumns = newColumns.slice(0, count);
-    }
+  const handleColumnCountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const count = Number(e.target.value);
+    handleChangeGrid(count, rowsCount);
+  };
 
-    onChangeBlockField({ columns: newColumns, columnsCount: count });
-  }
+  const handleRowsCountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const count = Number(e.target.value);
+    handleChangeGrid(columnCount, count);
+  };
 
-  // Вынесенный обработчик для изменения gap
-  function handleGapChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleColumnCountBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    handleChangeGrid(value, rowsCount);
+  };
+  const handleRowsCountBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    handleChangeGrid(columnCount, value);
+  };
+
+  const handleGapChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     handleSaveProperty("gap", value);
-    onChange({ gap: value });
-  }
+    onChange({
+      ...block,
+      properties: {
+        ...block.properties,
+        gap: value,
+      },
+    });
+  };
 
   return (
     <div className="space-y-6">
       <div className="space-y-3">
         <Label className="text-xs font-semibold text-foreground">Grid</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col gap-2">
           <Input
             placeholder="12px"
             className="bg-background border-input"
             value={properties?.gap || ""}
             onChange={handleGapChange}
           />
+          <Label className="text-xs font-semibold text-foreground">Cols</Label>
           <Input
             placeholder="1"
             className="bg-background border-input"
             type="number"
-            value={columnCount ?? ""}
+            value={columnCount}
             min={1}
             max={4}
             onChange={handleColumnCountChange}
             onBlur={handleColumnCountBlur}
+          />
+          <Label className="text-xs font-semibold text-foreground">Rows</Label>
+          <Input
+            placeholder="1"
+            className="bg-background border-input"
+            type="number"
+            value={rowsCount}
+            min={1}
+            max={4}
+            onChange={handleRowsCountChange}
+            onBlur={handleRowsCountBlur}
           />
         </div>
       </div>
@@ -104,25 +164,57 @@ export default function ColumnsPropertiesPanel({
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
-        onChange={onChange}
+        onChange={(cssProps) =>
+          onChange({
+            ...block,
+            properties: {
+              ...block.properties,
+              ...cssProps,
+            },
+          })
+        }
       />
       <Borders
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
-        onChange={onChange}
+        onChange={(cssProps) =>
+          onChange({
+            ...block,
+            properties: {
+              ...block.properties,
+              ...cssProps,
+            },
+          })
+        }
       />
       <Sizes
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
-        onChange={onChange}
+        onChange={(cssProps) =>
+          onChange({
+            ...block,
+            properties: {
+              ...block.properties,
+              ...cssProps,
+            },
+          })
+        }
       />
       <Offsets
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}
-        onChange={onChange}
+        onChange={(cssProps) =>
+          onChange({
+            ...block,
+            properties: {
+              ...block.properties,
+              ...cssProps,
+            },
+          })
+        }
       />
     </div>
   );

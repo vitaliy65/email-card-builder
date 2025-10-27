@@ -37,7 +37,10 @@ export default function ImageContain({
             onClick={() => {
               handleSaveProperty("objectFit", opt.value);
               onChange({
-                objectFit: opt.value as React.CSSProperties["objectFit"],
+                properties: {
+                  ...properties,
+                  objectFit: opt.value as React.CSSProperties["objectFit"],
+                },
               });
             }}
           >

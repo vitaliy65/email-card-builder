@@ -1,13 +1,6 @@
 import React from "react";
-import { BlockTypes, LinkBlockItem } from "@/types/block";
-import {
-  BlockItem,
-  TextBlockItem,
-  HeadingBlockItem,
-  ButtonBlockItem,
-  ImageBlockItem,
-  ColumnsBlockItem,
-} from "@/types/block";
+import { BlockItem, BlockTypes } from "@/types/block";
+import { ImageBlockItem, ColumnsBlockItem } from "@/types/block";
 
 // Импорт всех компонентов блоков
 import TextBlock from "@/components/blocks/TextBlock";
@@ -20,14 +13,14 @@ import ColumnsBlock from "@/components/blocks/ColumnsBlock";
 import LinkBlock from "@/components/blocks/LinkBlock";
 
 // Типы для каждого компонента блока
-type TextBlockComponent = React.ComponentType<{ props?: TextBlockItem }>;
-type HeadingBlockComponent = React.ComponentType<{ props?: HeadingBlockItem }>;
-type ButtonBlockComponent = React.ComponentType<{ props?: ButtonBlockItem }>;
+type TextBlockComponent = React.ComponentType<{ props?: BlockItem }>;
+type HeadingBlockComponent = React.ComponentType<{ props?: BlockItem }>;
+type ButtonBlockComponent = React.ComponentType<{ props?: BlockItem }>;
 type ImageBlockComponent = React.ComponentType<{ props?: ImageBlockItem }>;
 type DividerBlockComponent = React.ComponentType<{ props?: BlockItem }>;
 type SpacerBlockComponent = React.ComponentType<{ props?: BlockItem }>;
 type ColumnsBlockComponent = React.ComponentType<{ props?: ColumnsBlockItem }>;
-type LinkBlockComponent = React.ComponentType<{ props?: LinkBlockItem }>;
+type LinkBlockComponent = React.ComponentType<{ props?: BlockItem }>;
 
 // Union тип для всех компонентов блоков
 export type BlockComponent =

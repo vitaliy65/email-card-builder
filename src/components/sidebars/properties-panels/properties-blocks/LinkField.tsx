@@ -13,9 +13,10 @@ import { Link2Icon } from "lucide-react";
  * LinkField — поле для редактирования только href (без onClick)
  */
 export default function LinkField({
+  block,
   fields,
   handleSaveField,
-  onChangeBlockField,
+  onChange,
 }: FieldsBlockProps) {
   const [url, setUrl] = useState(fields?.href ?? "");
 
@@ -24,7 +25,7 @@ export default function LinkField({
     const newUrl = e.target.value;
     setUrl(newUrl);
     handleSaveField("href", newUrl);
-    onChangeBlockField({ href: newUrl });
+    onChange({ ...fields, href: newUrl });
   };
 
   useEffect(() => {

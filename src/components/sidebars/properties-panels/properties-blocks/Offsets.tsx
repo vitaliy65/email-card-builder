@@ -54,7 +54,9 @@ export default function Offsets({
                   [side]: value,
                 });
                 handleSaveProperty("padding", paddingString);
-                onChange({ padding: paddingString });
+                onChange({
+                  properties: { ...properties, padding: paddingString },
+                });
               }}
             />
           ) : (
@@ -65,7 +67,7 @@ export default function Offsets({
               onChange={(e) => {
                 const value = ensurePx(e.target.value);
                 handleSaveProperty("padding", e.target.value);
-                onChange({ padding: value });
+                onChange({ properties: { ...properties, padding: value } });
               }}
             />
           )}
@@ -88,7 +90,9 @@ export default function Offsets({
                   [side]: value,
                 });
                 handleSaveProperty("margin", marginString);
-                onChange({ margin: marginString });
+                onChange({
+                  properties: { ...properties, margin: marginString },
+                });
               }}
             />
           ) : (
@@ -98,7 +102,12 @@ export default function Offsets({
               value={String(properties?.margin ?? "0px")}
               onChange={(e) => {
                 handleSaveProperty("margin", e.target.value);
-                onChange({ margin: ensurePx(e.target.value) });
+                onChange({
+                  properties: {
+                    ...properties,
+                    margin: ensurePx(e.target.value),
+                  },
+                });
               }}
             />
           )}

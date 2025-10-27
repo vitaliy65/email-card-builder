@@ -1,6 +1,5 @@
 "use client";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { GridProperties } from "@/types/block";
 import { DividerPropertiesPanelProps } from "@/types/properties-panels";
 import { useEffect } from "react";
 import Colors from "./properties-blocks/Colors";
@@ -13,7 +12,7 @@ export default function DividerPropertiesPanel({
   onChange,
 }: DividerPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GridProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);

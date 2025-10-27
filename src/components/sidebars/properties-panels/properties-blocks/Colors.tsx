@@ -26,9 +26,11 @@ export default function Colors({
   useEffect(() => {
     if (enableGradient) {
       const currentGradient = `linear-gradient(${gradient.degrees}deg, ${gradient.firstPoint} 0%, ${gradient.secondPoint} 100%)`;
-      onChange({ background: currentGradient });
+      onChange({ properties: { ...properties, background: currentGradient } });
     } else {
-      onChange({ background: properties?.background });
+      onChange({
+        properties: { ...properties, background: properties?.background },
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enableGradient]);
@@ -46,7 +48,7 @@ export default function Colors({
 
     // Формируем строку градиента вида 'linear-gradient(90deg, #3F2B96 0%, #A8C0FF 100%)'
     const newGradient = `linear-gradient(${updatedGradient.degrees}deg, ${updatedGradient.firstPoint} 0%, ${updatedGradient.secondPoint} 100%)`;
-    onChange({ background: newGradient });
+    onChange({ properties: { ...properties, background: newGradient } });
   };
 
   return (
@@ -59,9 +61,16 @@ export default function Colors({
           onCheckedChange={() => {
             if (enableGradient) {
               const currentGradient = `linear-gradient(${gradient.degrees}deg, ${gradient.firstPoint} 0%, ${gradient.secondPoint} 100%)`;
-              onChange({ background: currentGradient });
+              onChange({
+                properties: { ...properties, background: currentGradient },
+              });
             } else {
-              onChange({ background: properties?.background });
+              onChange({
+                properties: {
+                  ...properties,
+                  background: properties?.background,
+                },
+              });
             }
             setEnableGradient((prev) => !prev);
           }}
@@ -84,7 +93,9 @@ export default function Colors({
               value={properties?.background}
               onChange={(e) => {
                 handleSaveProperty("background", e.target.value);
-                onChange({ background: e.target.value });
+                onChange({
+                  properties: { ...properties, background: e.target.value },
+                });
               }}
             />
             <Input
@@ -93,7 +104,9 @@ export default function Colors({
               value={properties?.background}
               onChange={(e) => {
                 handleSaveProperty("background", e.target.value);
-                onChange({ background: e.target.value });
+                onChange({
+                  properties: { ...properties, background: e.target.value },
+                });
               }}
             />
           </div>
@@ -186,7 +199,9 @@ export default function Colors({
               value={properties?.borderColor}
               onChange={(e) => {
                 handleSaveProperty("borderColor", e.target.value);
-                onChange({ borderColor: e.target.value });
+                onChange({
+                  properties: { ...properties, borderColor: e.target.value },
+                });
               }}
             />
             <Input
@@ -195,7 +210,9 @@ export default function Colors({
               value={properties?.borderColor}
               onChange={(e) => {
                 handleSaveProperty("borderColor", e.target.value);
-                onChange({ borderColor: e.target.value });
+                onChange({
+                  properties: { ...properties, borderColor: e.target.value },
+                });
               }}
             />
           </div>

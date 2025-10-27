@@ -38,7 +38,7 @@ export default function Typography({
             onChange={(e) => {
               const value = Number(e.target.value);
               handleSaveProperty("fontSize", value);
-              onChange({ fontSize: value });
+              onChange({ properties: { ...properties, fontSize: value } });
             }}
           />
         </div>
@@ -52,7 +52,7 @@ export default function Typography({
             onChange={(e) => {
               const value = Number(e.target.value);
               handleSaveProperty("fontWeight", value);
-              onChange({ fontWeight: value });
+              onChange({ properties: { ...properties, fontWeight: value } });
             }}
           >
             <option value="400">Normal</option>
@@ -71,7 +71,7 @@ export default function Typography({
             onChange={(e) => {
               const value = e.target.value;
               handleSaveProperty("color", value);
-              onChange({ color: value });
+              onChange({ properties: { ...properties, color: value } });
             }}
           />
         </div>
@@ -99,7 +99,12 @@ export default function Typography({
                 title={opt.label}
                 onClick={() => {
                   handleSaveProperty("textAlign", opt.value);
-                  onChange({ textAlign: opt.value as CanvasTextAlign });
+                  onChange({
+                    properties: {
+                      ...properties,
+                      textAlign: opt.value as CanvasTextAlign,
+                    },
+                  });
                 }}
               >
                 <Icon size={18} />

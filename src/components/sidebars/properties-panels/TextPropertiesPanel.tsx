@@ -8,14 +8,13 @@ import Sizes from "./properties-blocks/Sizes";
 import Offsets from "./properties-blocks/Offsets";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { GeneralBlockProperties } from "@/types/block";
 
 export default function TextPropertiesPanel({
   block,
   onChange,
 }: TextPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GeneralBlockProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);
@@ -31,7 +30,7 @@ export default function TextPropertiesPanel({
           value={properties?.content || ""}
           onChange={(e) => {
             handleSaveProperty("content", e.target.value);
-            onChange({ content: e.target.value });
+            onChange({ properties: { content: e.target.value } });
           }}
         />
       </div>

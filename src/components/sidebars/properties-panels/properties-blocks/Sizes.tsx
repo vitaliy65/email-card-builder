@@ -25,7 +25,7 @@ export default function Sizes({
             onChange={(e) => {
               const value = ensurePx(e.target.value);
               handleSaveProperty("width", e.target.value);
-              onChange({ width: value });
+              onChange({ properties: { ...properties, width: value } });
             }}
           />
         </div>
@@ -40,7 +40,7 @@ export default function Sizes({
             onChange={(e) => {
               const value = ensurePx(e.target.value);
               handleSaveProperty("height", e.target.value);
-              onChange({ height: value });
+              onChange({ properties: { ...properties, height: value } });
             }}
           />
         </div>

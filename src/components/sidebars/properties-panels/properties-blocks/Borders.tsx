@@ -25,7 +25,7 @@ export default function Borders({
             onChange={(e) => {
               const value = ensurePx(e.target.value);
               handleSaveProperty("borderRadius", e.target.value);
-              onChange({ borderRadius: value });
+              onChange({ properties: { ...properties, borderRadius: value } });
             }}
           />
         </div>
@@ -40,7 +40,7 @@ export default function Borders({
             onChange={(e) => {
               const value = ensurePx(e.target.value);
               handleSaveProperty("borderWidth", e.target.value);
-              onChange({ borderWidth: value });
+              onChange({ properties: { ...properties, borderWidth: value } });
             }}
           />
         </div>
@@ -53,7 +53,9 @@ export default function Borders({
             value={properties?.borderStyle ?? "solid"}
             onChange={(e) => {
               handleSaveProperty("borderStyle", e.target.value);
-              onChange({ borderStyle: e.target.value });
+              onChange({
+                properties: { ...properties, borderStyle: e.target.value },
+              });
             }}
           >
             <option value="solid">Solid</option>
@@ -76,7 +78,9 @@ export default function Borders({
             value={properties?.display ?? "inline-block"}
             onChange={(e) => {
               handleSaveProperty("display", e.target.value);
-              onChange({ display: e.target.value });
+              onChange({
+                properties: { ...properties, display: e.target.value },
+              });
             }}
           >
             <option value="inline-block">Inline-block</option>

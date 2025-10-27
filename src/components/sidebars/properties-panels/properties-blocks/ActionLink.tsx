@@ -16,7 +16,7 @@ import { FieldsBlockProps } from "@/types/properties-panels";
 export default function ActionLink({
   fields,
   handleSaveField,
-  onChangeBlockField,
+  onChange,
 }: FieldsBlockProps) {
   const [url, setUrl] = useState(fields?.href ?? "");
 
@@ -39,7 +39,7 @@ export default function ActionLink({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    onChangeBlockField({ href: newUrl });
+    onChange({ ...fields, href: newUrl });
   };
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function ActionLink({
 
     const onClickHandler = createOnClick(url);
     handleSaveField("onClick", onClickHandler);
-    onChangeBlockField({ href: url, onClick: onClickHandler });
+    onChange({ ...fields, href: url, onClick: onClickHandler });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 

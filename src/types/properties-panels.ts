@@ -1,54 +1,36 @@
-import {
-  BlockItem,
-  ButtonBlockItem,
-  GeneralBlockProperties,
-  ColumnsBlockItem,
-  HeadingBlockItem,
-  ImageBlockItem,
-  TextBlockItem,
-  LinkBlockItem,
-} from "@/types/block";
+import { BlockItem, ColumnsBlockItem, ImageBlockItem } from "@/types/block";
+import { CSSProperties } from "react";
 
-export interface PropertiesBlockProps<
-  T extends BlockItem = BlockItem,
-  P extends GeneralBlockProperties = GeneralBlockProperties
-> {
+export interface PropertiesBlockProps<T extends BlockItem = BlockItem> {
   block: T;
-  onChange: (props: Partial<P>) => void;
-  properties: P | undefined;
+  onChange: (props: Partial<T>) => void;
+  properties: CSSProperties | undefined;
   handleSaveProperty: (key: string, property: string | number) => void;
 }
 
 export interface FieldsBlockProps<T extends BlockItem = BlockItem> {
   block: T;
-  onChangeBlockField: (props: Partial<T>) => void;
+  onChange: (props: Partial<T>) => void;
   fields: T | undefined;
   handleSaveField: (key: string, field: unknown) => void;
 }
 
-export interface BasePropertiesPanelProps<
-  T extends BlockItem = BlockItem,
-  P extends GeneralBlockProperties = GeneralBlockProperties
-> {
+export interface BasePanelProps<T extends BlockItem = BlockItem> {
   block: T;
-  onChange: (props: Partial<P>) => void;
+  onChange: (props: Partial<T>) => void;
 }
 
-export interface BaseFieldPanelProps<
-  T extends BlockItem = BlockItem,
-  P extends GeneralBlockProperties = GeneralBlockProperties
-> {
+export interface GridBaseFieldPanelProps<T extends BlockItem = BlockItem> {
   block: T;
-  onChange: (props: Partial<P>) => void;
-  onChangeBlockField: (props: Partial<T>) => void;
+  onChange: (block: ColumnsBlockItem) => void;
 }
 
-export type LinkPropertiesPanelProps = BaseFieldPanelProps<LinkBlockItem>;
-export type TextPropertiesPanelProps = BasePropertiesPanelProps<TextBlockItem>;
-export type HeadingPropertiesPanelProps =
-  BasePropertiesPanelProps<HeadingBlockItem>;
-export type ButtonPropertiesPanelProps = BaseFieldPanelProps<ButtonBlockItem>;
-export type ImagePropertiesPanelProps = BaseFieldPanelProps<ImageBlockItem>;
-export type DividerPropertiesPanelProps = BasePropertiesPanelProps<BlockItem>;
-export type SpacerPropertiesPanelProps = BasePropertiesPanelProps<BlockItem>;
-export type ColumnsPropertiesPanelProps = BaseFieldPanelProps<ColumnsBlockItem>;
+export type LinkPropertiesPanelProps = BasePanelProps<BlockItem>;
+export type TextPropertiesPanelProps = BasePanelProps<BlockItem>;
+export type HeadingPropertiesPanelProps = BasePanelProps<BlockItem>;
+export type ButtonPropertiesPanelProps = BasePanelProps<BlockItem>;
+export type ImagePropertiesPanelProps = BasePanelProps<ImageBlockItem>;
+export type DividerPropertiesPanelProps = BasePanelProps<BlockItem>;
+export type SpacerPropertiesPanelProps = BasePanelProps<BlockItem>;
+export type ColumnsPropertiesPanelProps =
+  GridBaseFieldPanelProps<ColumnsBlockItem>;

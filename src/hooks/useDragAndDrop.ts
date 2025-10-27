@@ -1,17 +1,32 @@
 "use client";
 import { useCallback } from "react";
-import { DragEndEvent, Over } from "@dnd-kit/core";
+import { DragEndEvent } from "@dnd-kit/core";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addBlock,
   setGrabbingBlock,
-  CanvasBlock,
-  updateCanvasColumnBlock,
+  updateGridChildBlock,
 } from "@/store/slices/blocksSlice";
 import { blockDefaults } from "@/data/blocks";
-import { BlockTypes, BlockItem, Column } from "@/types/block";
+import { BlockTypes, BlockItem } from "@/types/block";
 import { v4 as uuidv4 } from "uuid";
+import { createCanvasBlock } from "@/lib/utils";
 
+/**
+ * Создать новый объект BlockItem для вставки в колонку/ячейку
+ */
+export function createColumnCellBlock(blockType: BlockTypes): BlockItem {
+  const base = blockDefaults[blockType] as BlockItem;
+  return {
+    ...base,
+    uuid: uuidv4(),
+    properties: { ...base.properties },
+  };
+}
+
+/**
+ * Хук dnd для работы с canvas и ColumnsBlock
+ */
 export const useDragAndDrop = () => {
   const dispatch = useAppDispatch();
   const canvasBlocks = useAppSelector((state) => state.blocks.canvasBlocks);
@@ -19,120 +34,52 @@ export const useDragAndDrop = () => {
     (state) => state.blocks.grabingBlockUUID
   );
 
-  // Создание нового блока для canvas на основе шаблона из blockDefaults
-  const createCanvasBlock = useCallback(
-    (blockType: BlockTypes): CanvasBlock => {
-      const blockTemplate = blockDefaults[blockType] as BlockItem;
-      return {
-        ...blockTemplate,
-        uuid: uuidv4(),
-        properties: {
-          ...blockTemplate.properties,
-        },
-      } as CanvasBlock;
-    },
-    []
-  );
-
-  const createColBlock = useCallback((blockType: BlockTypes): Column => {
-    // Создаем данные блока для вставки в колонку ColumnsBlock
-    const blockData = {
-      ...blockDefaults[blockType],
-      uuid: uuidv4(), // уникальный ID для блока
-    };
-
-    return {
-      id: uuidv4(), // уникальный ID для колонки
-      content: blockData,
-    } as Column;
-  }, []);
-
-  const handleUpdateColumn = useCallback(
-    ({
-      over,
-      draggedBlockType,
-    }: {
-      over: Over;
-      draggedBlockType: BlockTypes;
-    }) => {
-      if (over.id.toString().startsWith("col_")) {
-        try {
-          const overId = over.id.toString();
-          // Парсим ID: col_{columnBoxIndex}_{columnIndex}
-          const parts = overId.split("_");
-
-          if (parts.length < 2) {
-            console.error("Invalid column ID format:", overId);
-            return;
-          }
-
-          const columnBoxIndex = parts[1]; // UUID блока колонок
-          const columnIndex = parts.length > 2 ? parts[2] : ""; // ID конкретной колонки
-
-          const updatedColumnBlock = createColBlock(draggedBlockType);
-
-          dispatch(
-            updateCanvasColumnBlock({
-              block: updatedColumnBlock,
-              columnBoxIndex,
-              columnIndex,
-            })
-          );
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          console.error(
-            "An error occurred while creating a new block: ",
-            err.message
-          );
-        }
-      }
-    },
-    [createColBlock, dispatch]
-  );
-
-  // Обработка завершения перетаскивания
+  /**
+   * Обработка для вставки блока в ячейку (cell_) либо обычный droppable-block-*
+   * Совместимо с вашим ColumnsBlock/ColumnBlockCell
+   */
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
+      if (!over) return;
 
-      if (!over) {
-        // Drag ended without valid drop target
-        return;
-      }
-
-      // Определить тип блока из BlockTypes
+      // draggedBlockType: определяем тип блока
       const draggedBlockType = Object.values(BlockTypes).find(
         (type) => type === active.id
       ) as BlockTypes | undefined;
+      if (!draggedBlockType) return;
 
-      if (!draggedBlockType) {
-        // Block type not found in BlockTypes
+      const overId = over.id.toString();
+
+      // Сброс на обычный блок: добавляем на канвас
+      if (overId.startsWith("droppable-block-")) {
+        const newCanvasBlock = createCanvasBlock(draggedBlockType);
+        dispatch(
+          addBlock({
+            block: newCanvasBlock,
+            index: canvasBlocks.length,
+          })
+        );
         return;
       }
 
-      handleUpdateColumn({ over, draggedBlockType });
+      // Сброс в ячейку таблицы-columns: id формата "cell_{uuid}_{rowIdx}_{colIdx}"
+      if (overId.startsWith("cell_")) {
+        const parts = overId.split("_");
+        const columnUUID = parts[1];
+        const row_idx = parseInt(parts[2], 10);
+        const col_idx = parseInt(parts[3], 10);
 
-      // Проверяем, что элемент сброшен в droppable область
-      if (over.id.toString().startsWith("droppable-block-")) {
-        try {
-          const newCanvasBlock = createCanvasBlock(draggedBlockType);
+        // Создать новый блок и отдать в свой updateColumnChildFields экшен
+        const newBlock = createColumnCellBlock(draggedBlockType);
 
-          dispatch(
-            addBlock({
-              block: newCanvasBlock,
-              index: canvasBlocks.length,
-            })
-          );
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          console.error(
-            "An error occurred while creating a new block: ",
-            err.message
-          );
-        }
+        dispatch(updateGridChildBlock({ block: newBlock, col_idx, row_idx }));
+        return;
       }
+
+      // Возможны другие типы droppable — добавить здесь
     },
-    [dispatch, canvasBlocks.length, createCanvasBlock, handleUpdateColumn]
+    [dispatch, canvasBlocks.length]
   );
 
   // Начало перетаскивания блока
@@ -191,5 +138,6 @@ export const useDragAndDrop = () => {
     getDragInfo,
     canAddBlock,
     createCanvasBlock,
+    createColumnCellBlock,
   };
 };

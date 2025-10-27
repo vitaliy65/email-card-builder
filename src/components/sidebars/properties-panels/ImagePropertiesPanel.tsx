@@ -7,17 +7,16 @@ import Sizes from "./properties-blocks/Sizes";
 import Offsets from "./properties-blocks/Offsets";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { GeneralBlockProperties } from "@/types/block";
 import BlockJustification from "./properties-blocks/BlockJustification";
 import ImageContain from "./properties-blocks/ImageContain";
+import Colors from "./properties-blocks/Colors";
 
 export default function ImagePropertiesPanel({
   block,
   onChange,
-  onChangeBlockField,
 }: ImagePropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GeneralBlockProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);
@@ -32,7 +31,7 @@ export default function ImagePropertiesPanel({
           className="bg-background border-input"
           value={block.src || ""}
           onChange={(e) => {
-            onChangeBlockField({ src: e.target.value });
+            onChange({ src: e.target.value });
           }}
         />
         <Input
@@ -40,7 +39,7 @@ export default function ImagePropertiesPanel({
           className="bg-background border-input"
           value={block.alt || ""}
           onChange={(e) => {
-            onChangeBlockField({ alt: e.target.value });
+            onChange({ alt: e.target.value });
           }}
         />
       </div>
@@ -51,6 +50,12 @@ export default function ImagePropertiesPanel({
         onChange={onChange}
       />
       <ImageContain
+        block={block}
+        properties={properties}
+        handleSaveProperty={handleSaveProperty}
+        onChange={onChange}
+      />
+      <Colors
         block={block}
         properties={properties}
         handleSaveProperty={handleSaveProperty}

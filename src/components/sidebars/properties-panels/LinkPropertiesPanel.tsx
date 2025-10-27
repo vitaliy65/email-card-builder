@@ -8,19 +8,18 @@ import Sizes from "./properties-blocks/Sizes";
 import Offsets from "./properties-blocks/Offsets";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { ButtonBlockItem, LinkBlockItem, LinkProperties } from "@/types/block";
 import LinkField from "./properties-blocks/LinkField";
 import useSaveField from "@/hooks/properties-panels/useSaveField";
+import { BlockItem } from "@/types/block";
 
 export default function LinkPropertiesPanel({
   block,
   onChange,
-  onChangeBlockField,
 }: LinkPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<LinkProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
   const { fields, setFields, handleSaveField } =
-    useSaveField<LinkBlockItem>(undefined);
+    useSaveField<BlockItem>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);
@@ -37,7 +36,7 @@ export default function LinkPropertiesPanel({
           value={properties?.content || ""}
           onChange={(e) => {
             handleSaveProperty("content", e.target.value);
-            onChange({ content: e.target.value });
+            onChange({ properties: { content: e.target.value } });
           }}
         />
       </div>
@@ -46,7 +45,7 @@ export default function LinkPropertiesPanel({
         block={block}
         fields={fields}
         handleSaveField={handleSaveField}
-        onChangeBlockField={onChangeBlockField}
+        onChange={onChange}
       />
 
       <Typography

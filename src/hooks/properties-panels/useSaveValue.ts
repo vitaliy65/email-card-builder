@@ -1,7 +1,6 @@
-import { GeneralBlockProperties } from "@/types/block";
 import { useState } from "react";
 
-export default function useSaveProperties<T extends GeneralBlockProperties>(
+export default function useSaveProperties<T extends React.CSSProperties>(
   blockProperties: T | undefined
 ) {
   const [properties, setProperties] = useState<T | undefined>(blockProperties);

@@ -4,14 +4,13 @@ import { Label } from "@/components/ui/label";
 import { SpacerPropertiesPanelProps } from "@/types/properties-panels";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { GridProperties } from "@/types/block";
 
 export default function SpacerPropertiesPanel({
   block,
   onChange,
 }: SpacerPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GridProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);
@@ -28,7 +27,7 @@ export default function SpacerPropertiesPanel({
             value={properties?.height || "24px"}
             onChange={(e) => {
               handleSaveProperty("height", e.target.value);
-              onChange({ height: e.target.value });
+              onChange({ properties: { height: e.target.value } });
             }}
           />
           <Input
@@ -37,7 +36,7 @@ export default function SpacerPropertiesPanel({
             value={properties?.background || "#ffffff"}
             onChange={(e) => {
               handleSaveProperty("background", e.target.value);
-              onChange({ background: e.target.value });
+              onChange({ properties: { background: e.target.value } });
             }}
           />
         </div>
@@ -56,7 +55,7 @@ export default function SpacerPropertiesPanel({
               value={properties?.padding || "0"}
               onChange={(e) => {
                 handleSaveProperty("padding", e.target.value);
-                onChange({ padding: e.target.value });
+                onChange({ properties: { padding: e.target.value } });
               }}
             />
           </div>
@@ -70,7 +69,7 @@ export default function SpacerPropertiesPanel({
               value={properties?.margin || "0"}
               onChange={(e) => {
                 handleSaveProperty("margin", e.target.value);
-                onChange({ margin: e.target.value });
+                onChange({ properties: { margin: e.target.value } });
               }}
             />
           </div>

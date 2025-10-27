@@ -8,19 +8,18 @@ import Sizes from "./properties-blocks/Sizes";
 import Offsets from "./properties-blocks/Offsets";
 import { useEffect } from "react";
 import useSaveProperties from "@/hooks/properties-panels/useSaveValue";
-import { ButtonBlockItem, GeneralBlockProperties } from "@/types/block"; // adjust this import path as necessary
+import { BlockItem } from "@/types/block"; // adjust this import path as necessary
 import ActionLink from "./properties-blocks/ActionLink";
 import useSaveField from "@/hooks/properties-panels/useSaveField";
 
 export default function ButtonPropertiesPanel({
   block,
   onChange,
-  onChangeBlockField,
 }: ButtonPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<GeneralBlockProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(undefined);
   const { fields, setFields, handleSaveField } =
-    useSaveField<ButtonBlockItem>(undefined);
+    useSaveField<BlockItem>(undefined);
 
   useEffect(() => {
     setProperties(block.properties);
@@ -39,7 +38,7 @@ export default function ButtonPropertiesPanel({
           value={properties?.content || ""}
           onChange={(e) => {
             handleSaveProperty("content", e.target.value);
-            onChange({ content: e.target.value });
+            onChange({ properties: { content: e.target.value } });
           }}
         />
       </div>
@@ -48,7 +47,7 @@ export default function ButtonPropertiesPanel({
         block={block}
         fields={fields}
         handleSaveField={handleSaveField}
-        onChangeBlockField={onChangeBlockField}
+        onChange={onChange}
       />
 
       {/* Typography - all associated with text */}

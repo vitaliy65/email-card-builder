@@ -63,7 +63,9 @@ export default function BlockJustification({
                 title={opt.label}
                 onClick={() => {
                   handleSaveProperty("justifyContent", opt.value);
-                  onChange({ justifyContent: opt.value });
+                  onChange({
+                    properties: { ...properties, justifyContent: opt.value },
+                  });
                 }}
               >
                 <Icon size={18} />
@@ -93,7 +95,9 @@ export default function BlockJustification({
                 title={opt.label}
                 onClick={() => {
                   handleSaveProperty("alignItems", opt.value);
-                  onChange({ alignItems: opt.value });
+                  onChange({
+                    properties: { ...properties, alignItems: opt.value },
+                  });
                 }}
               >
                 <Icon size={18} />

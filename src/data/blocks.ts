@@ -1,24 +1,14 @@
 import {
-  BlockItem,
-  TextBlockItem,
-  HeadingBlockItem,
-  ButtonBlockItem,
   ImageBlockItem,
   ColumnsBlockItem,
   BlockTypes,
-  LinkBlockItem,
+  BlockItem,
 } from "@/types/block";
 
 // Все дефолты блоков в одном массиве/объекте для быстрого поиска по типу
 export const blockDefaults: Record<
   BlockTypes,
-  | BlockItem
-  | TextBlockItem
-  | HeadingBlockItem
-  | ButtonBlockItem
-  | ImageBlockItem
-  | ColumnsBlockItem
-  | LinkBlockItem
+  ImageBlockItem | ColumnsBlockItem | BlockItem
 > = {
   [BlockTypes.text]: {
     id: BlockTypes.text,
@@ -41,7 +31,7 @@ export const blockDefaults: Record<
       display: "block",
       gap: "0px",
     },
-  } as TextBlockItem,
+  } as BlockItem,
   [BlockTypes.heading]: {
     id: BlockTypes.heading,
     uuid: "",
@@ -63,7 +53,7 @@ export const blockDefaults: Record<
       display: "block",
       gap: "0px",
     },
-  } as HeadingBlockItem,
+  } as BlockItem,
   [BlockTypes.button]: {
     id: BlockTypes.button,
     uuid: "",
@@ -87,7 +77,7 @@ export const blockDefaults: Record<
       display: "inline-block",
       gap: "0px",
     },
-  } as ButtonBlockItem,
+  } as BlockItem,
   [BlockTypes.image]: {
     id: BlockTypes.image,
     uuid: "",
@@ -151,7 +141,8 @@ export const blockDefaults: Record<
     uuid: "",
     type: BlockTypes.columns,
     columnsCount: 1,
-    columns: [{ content: null }],
+    rowsCount: 1,
+    gridElements: [[{ content: null }]],
     properties: {
       padding: "0px 0px 0px 0px",
       margin: "0px 0px 0px 0px",
@@ -163,7 +154,6 @@ export const blockDefaults: Record<
       height: "auto",
       display: "grid",
       gap: "12px",
-      zIndex: "10",
       background: "#ffffff",
       boxShadow: "none",
       minWidth: "0",
@@ -203,17 +193,15 @@ export const blockDefaults: Record<
       activeBackgroundColor: "#d1d1d1",
       visitedColor: "#551a8b",
     },
-  } as LinkBlockItem,
+  } as BlockItem,
 };
 
 // Экспорт каждого дефолта по-отдельности, если это нужно где-то еще
-export const TextBlockDefault = blockDefaults[BlockTypes.text] as TextBlockItem;
+export const TextBlockDefault = blockDefaults[BlockTypes.text] as BlockItem;
 export const HeadingBlockDefault = blockDefaults[
   BlockTypes.heading
-] as HeadingBlockItem;
-export const ButtonBlockDefault = blockDefaults[
-  BlockTypes.button
-] as ButtonBlockItem;
+] as BlockItem;
+export const ButtonBlockDefault = blockDefaults[BlockTypes.button] as BlockItem;
 export const ImageBlockDefault = blockDefaults[
   BlockTypes.image
 ] as ImageBlockItem;
@@ -224,4 +212,4 @@ export const SpacerBlockDefault = blockDefaults[BlockTypes.spacer] as BlockItem;
 export const ColumnBlockDefault = blockDefaults[
   BlockTypes.columns
 ] as ColumnsBlockItem;
-export const LinkBlockDefault = blockDefaults[BlockTypes.link] as LinkBlockItem;
+export const LinkBlockDefault = blockDefaults[BlockTypes.link] as BlockItem;

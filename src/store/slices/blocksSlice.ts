@@ -1,12 +1,7 @@
 // store/blocksSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  BlockItem,
-  Column,
-  ColumnsBlockItem,
-  BlockTypes,
-  GeneralBlockProperties,
-} from "@/types/block";
+import { BlockItem, ColumnsBlockItem, GridElement } from "@/types/block";
+import React from "react";
 
 // Расширяем BlockItem для блоков на Canvas
 export interface CanvasBlock extends BlockItem {
@@ -15,11 +10,15 @@ export interface CanvasBlock extends BlockItem {
 
 interface BlocksState {
   canvasBlocks: CanvasBlock[]; // блоки на Canvas (в нужном порядке)
-  selectedBlock: CanvasBlock | null; // uuid выбранного блока
+  selectedBlock: CanvasBlock | null; // выбранный блок (объект)
   grabingBlockUUID: string | null;
   hoveredBlockId: string | null;
-  selectedColumnBlockUUID: string | null;
-  selectedColumnChildBlockUUID: string | null;
+  selectedGridBlockUUID: string | null;
+  selectedGridChildData: {
+    cell: BlockItem | null;
+    col_idx: number;
+    row_idx: number;
+  } | null;
 }
 
 const initialState: BlocksState = {
@@ -27,15 +26,14 @@ const initialState: BlocksState = {
   selectedBlock: null,
   hoveredBlockId: null,
   grabingBlockUUID: null,
-  selectedColumnBlockUUID: null,
-  selectedColumnChildBlockUUID: null,
+  selectedGridBlockUUID: null,
+  selectedGridChildData: null,
 };
 
 const blocksSlice = createSlice({
   name: "blocks",
   initialState,
   reducers: {
-    // Добавить новый блок на Canvas (в конец по умолчанию или по заданному индексу)
     addBlock: (
       state,
       action: PayloadAction<{ block: CanvasBlock; index?: number }>
@@ -52,7 +50,6 @@ const blocksSlice = createSlice({
       }
     },
 
-    // Добавить блок между существующими по uuid previous и next
     addBetween: (
       state,
       action: PayloadAction<{
@@ -63,7 +60,6 @@ const blocksSlice = createSlice({
     ) => {
       const { block, previousBlockId, nextBlockId } = action.payload;
 
-      // Если явно указан previousBlockId, вставь после него
       if (previousBlockId) {
         const prevIdx = state.canvasBlocks.findIndex(
           (b) => b.uuid === previousBlockId
@@ -74,7 +70,6 @@ const blocksSlice = createSlice({
         }
       }
 
-      // Если previousBlockId нет, но есть nextBlockId — вставить перед ним
       if (!previousBlockId && nextBlockId) {
         const nextIdx = state.canvasBlocks.findIndex(
           (b) => b.uuid === nextBlockId
@@ -85,11 +80,9 @@ const blocksSlice = createSlice({
         }
       }
 
-      // Если оба не указаны или не найдены — вставить в конец
       state.canvasBlocks.push(block);
     },
 
-    // Изменить порядок блоков: переместить блок с fromIndex на toIndex
     moveBlock: (
       state,
       action: PayloadAction<{ fromIndex: number; toIndex: number }>
@@ -108,7 +101,6 @@ const blocksSlice = createSlice({
       state.canvasBlocks.splice(toIndex, 0, removed);
     },
 
-    // Переместить блок между другими по uuid previous и next
     moveBetween: (
       state,
       action: PayloadAction<{
@@ -123,23 +115,16 @@ const blocksSlice = createSlice({
       );
       if (currentIdx === -1) return;
 
-      // Удаляем блок из текущей позиции
       const [block] = state.canvasBlocks.splice(currentIdx, 1);
 
-      // === Логика определения новой позиции ===
+      let insertIdx: number = state.canvasBlocks.length;
 
-      let insertIdx: number = state.canvasBlocks.length; // по умолчанию — в конец
-
-      // 1. Если оба previousBlockId и nextBlockId не заданы — переместить в конец
-      // 2. Если previousBlockId не задан (null) и nextBlockId задан — переместить в начало (вставить на 0 перед nextBlockId)
       if (!previousBlockId && nextBlockId) {
         const nextIdx = state.canvasBlocks.findIndex(
           (b) => b.uuid === nextBlockId
         );
         insertIdx = nextIdx !== -1 ? nextIdx : 0;
-      }
-      // 3. Если previousBlockId задан — вставить после него
-      else if (previousBlockId) {
+      } else if (previousBlockId) {
         const prevIdx = state.canvasBlocks.findIndex(
           (b) => b.uuid === previousBlockId
         );
@@ -147,14 +132,7 @@ const blocksSlice = createSlice({
           insertIdx = prevIdx + 1;
         }
       }
-      // 4. Если ни previousBlockId, ни nextBlockId не найдены или некорректны — оставить в конце
 
-      // Корректировка, если элемент был выше целевой позиции (после удаления длина уменьшилась)
-      if (insertIdx > currentIdx) {
-        insertIdx = insertIdx;
-      }
-
-      // Ограничиваем диапазон
       if (insertIdx < 0) insertIdx = 0;
       if (insertIdx > state.canvasBlocks.length)
         insertIdx = state.canvasBlocks.length;
@@ -162,70 +140,43 @@ const blocksSlice = createSlice({
       state.canvasBlocks.splice(insertIdx, 0, block);
     },
 
-    // Обновить свойства блока на Canvas
-    updateBlockProperties: <T extends GeneralBlockProperties>(
+    updateBlock: (
       state: BlocksState,
       action: PayloadAction<{
-        uuid: string;
-        updatedProperties: Partial<T>;
+        updatedFields: Partial<BlockItem>;
       }>
     ) => {
-      const { uuid, updatedProperties } = action.payload;
+      const { updatedFields } = action.payload;
 
-      const idx = state.canvasBlocks.findIndex(
-        (b) => b.uuid === action.payload.uuid
-      );
-
-      if (idx !== -1) {
-        state.canvasBlocks[idx] = {
-          ...state.canvasBlocks[idx],
-          properties: {
-            ...state.canvasBlocks[idx].properties,
-            ...updatedProperties,
-          },
-        };
-        // Если выбранный блок совпадает по uuid — тоже обновляем
-        if (state.selectedBlock && state.selectedBlock.uuid === uuid) {
-          state.selectedBlock = {
-            ...state.selectedBlock,
-            properties: {
-              ...state.selectedBlock.properties,
-              ...updatedProperties,
-            },
-          };
-        }
-      }
-    },
-
-    updateBlockField: <T extends BlockItem>(
-      state: BlocksState,
-      action: PayloadAction<{
-        uuid: string;
-        updatedField: Partial<T>;
-      }>
-    ) => {
-      const { uuid, updatedField: updatedProperties } = action.payload;
+      // Берём uuid из selectedBlock
+      const uuid = state.selectedBlock?.uuid;
+      if (!uuid) return;
 
       const idx = state.canvasBlocks.findIndex((b) => b.uuid === uuid);
 
       if (idx !== -1) {
         state.canvasBlocks[idx] = {
           ...state.canvasBlocks[idx],
-          ...updatedProperties,
-          // properties остаётся без изменений (для обновления свойств используйте updateBlockProperties)
+          ...updatedFields,
+          properties: {
+            ...state.canvasBlocks[idx].properties,
+            ...(updatedFields.properties || {}),
+          },
         };
-        // Если выбранный блок совпадает по uuid — тоже обновляем
+        // update selectedBlock if same block is selected
         if (state.selectedBlock && state.selectedBlock.uuid === uuid) {
           state.selectedBlock = {
             ...state.selectedBlock,
-            ...updatedProperties,
-            // properties остаётся без изменений
+            ...updatedFields,
+            properties: {
+              ...state.selectedBlock.properties,
+              ...(updatedFields.properties || {}),
+            },
           };
         }
       }
     },
 
-    // Удалить блок с Canvas
     removeBlock: (state, action: PayloadAction<string>) => {
       state.canvasBlocks = state.canvasBlocks.filter(
         (b) => b.uuid !== action.payload
@@ -235,38 +186,55 @@ const blocksSlice = createSlice({
       }
     },
 
-    // Выбрать блок для редактирования
-    selectBlock: (state, action: PayloadAction<string | null>) => {
-      const selectedBlock = state.canvasBlocks.findLast(
-        (block) => block.uuid === action.payload
-      );
-
-      if (!selectedBlock) {
+    selectBlock: (state, action: PayloadAction<{ uuid: string } | null>) => {
+      if (action.payload === null) {
         state.selectedBlock = null;
         return;
       }
 
-      state.selectedBlock = selectedBlock;
+      const { uuid } = action.payload;
+
+      // Выбор верхнеуровневого блока по uuid (не для ячеек)
+      const selectedBlock = state.canvasBlocks.findLast(
+        (block) => block.uuid === uuid
+      );
+
+      state.selectedBlock = selectedBlock ?? null;
     },
 
-    selectBlockFromColumn: (
+    selectBlockFromGrid: (
       state,
-      action: PayloadAction<{ columnUUID: string; idx: number }>
+      action: PayloadAction<{
+        col_idx: number;
+        row_idx: number;
+      }>
     ) => {
-      const { columnUUID, idx } = action.payload;
+      const { col_idx, row_idx } = action.payload;
 
-      const selectedBlock = state.canvasBlocks.findLast(
-        (block) => block.uuid === columnUUID
+      const selectedGridBlock = state.canvasBlocks.findLast(
+        (block) => block.uuid === state.selectedGridBlockUUID
       ) as ColumnsBlockItem;
 
-      let column = null;
-
-      if (selectedBlock.columns) {
-        column = selectedBlock.columns[idx];
+      if (
+        !selectedGridBlock ||
+        !selectedGridBlock.gridElements ||
+        !selectedGridBlock.gridElements[col_idx] ||
+        !selectedGridBlock.gridElements[col_idx][row_idx]
+      ) {
+        return;
       }
 
-      if (column && column.content) {
-        state.selectedBlock = column.content;
+      const selectedCell = selectedGridBlock.gridElements[col_idx][row_idx];
+
+      if (selectedCell?.content?.uuid) {
+        state.selectedGridChildData = {
+          cell: selectedCell.content,
+          col_idx,
+          row_idx,
+        };
+        state.selectedBlock = selectedCell.content;
+      } else {
+        state.selectedGridChildData = null;
       }
     },
 
@@ -274,23 +242,31 @@ const blocksSlice = createSlice({
       state,
       action: PayloadAction<{ uuid: string | null }>
     ) => {
-      state.selectedColumnBlockUUID = action.payload.uuid;
+      state.selectedGridBlockUUID = action.payload.uuid;
     },
 
     setSelectedColumnChildUUID: (
       state,
-      action: PayloadAction<{ uuid: string | null }>
+      action: PayloadAction<{
+        cell: BlockItem | null;
+        col_idx: number;
+        row_idx: number;
+      } | null>
     ) => {
-      state.selectedColumnChildBlockUUID = action.payload.uuid;
+      if (action.payload === null) {
+        state.selectedGridChildData = null;
+        return;
+      }
+
+      const { cell, col_idx, row_idx } = action.payload;
+      state.selectedGridChildData = { cell, col_idx, row_idx };
     },
 
-    // Сброс Canvas
     resetCanvas: (state) => {
       state.canvasBlocks = [];
       state.selectedBlock = null;
     },
 
-    // Установить uuid блока, который захвачен (перетаскивается)
     setGrabbingBlock: (state, action: PayloadAction<string | null>) => {
       state.grabingBlockUUID = action.payload;
     },
@@ -303,131 +279,100 @@ const blocksSlice = createSlice({
       state.hoveredBlockId = id;
     },
 
-    // Обновляет блок в соответствующей колонке ColumnsBlock
-    updateCanvasColumnBlock: (
+    updateCanvasGridBlock: (
       state,
       action: PayloadAction<{
-        block: Column;
-        columnBoxIndex: string;
-        columnIndex: string;
+        block: ColumnsBlockItem;
       }>
     ) => {
-      const { block, columnBoxIndex, columnIndex } = action.payload;
+      const { block } = action.payload;
 
-      // Находим блок колонок по UUID
-      const columnBlock = state.canvasBlocks.find(
-        (b) => b.uuid === columnBoxIndex
-      ) as (CanvasBlock & ColumnsBlockItem) | undefined;
+      const idx = state.canvasBlocks.findLastIndex(
+        (b) => b.uuid === state.selectedGridBlockUUID
+      );
 
-      if (!columnBlock || columnBlock.type !== BlockTypes.columns) {
-        console.error("Column block not found or not a columns block");
-        return;
+      if (idx === -1) return;
+
+      const selectedGridBlock = state.canvasBlocks[idx] as ColumnsBlockItem;
+
+      if (!selectedGridBlock || !selectedGridBlock.gridElements) return;
+
+      // Иммутабельная замена всего ColumnsBlockItem
+      state.canvasBlocks[idx] = {
+        ...selectedGridBlock,
+        ...block,
+        gridElements: block.gridElements
+          ? [...block.gridElements]
+          : selectedGridBlock.gridElements,
+      } as ColumnsBlockItem;
+    },
+
+    updateGridChildBlock: (
+      state,
+      action: PayloadAction<{
+        block: Partial<BlockItem>;
+        col_idx?: number;
+        row_idx?: number;
+      }>
+    ) => {
+      // Определяем индексы столбца и строки
+      const col_idx =
+        action.payload.col_idx ?? state.selectedGridChildData?.col_idx;
+      const row_idx =
+        action.payload.row_idx ?? state.selectedGridChildData?.row_idx;
+      if (col_idx === undefined || row_idx === undefined) return;
+
+      // Находим индекс колонки в canvas
+      const idx = state.canvasBlocks.findLastIndex(
+        (b) => b.uuid === state.selectedGridBlockUUID
+      );
+      if (idx === -1) return;
+
+      const gridBlock = state.canvasBlocks[idx] as ColumnsBlockItem;
+      if (!gridBlock?.gridElements) return;
+
+      // Обновляем нужную ячейку
+      const grid = gridBlock.gridElements.map((col, c) =>
+        c === col_idx
+          ? col.map((cell, r) =>
+              r === row_idx
+                ? {
+                    content: { ...cell?.content, ...action.payload.block },
+                  }
+                : cell
+            )
+          : col
+      );
+
+      // Сохраняем новый gridElements в блоке
+      state.canvasBlocks[idx] = {
+        ...gridBlock,
+        gridElements: grid,
+      } as ColumnsBlockItem;
+
+      // Обновляем выбранный блок если совпадают uuid
+      const updatedBlock = grid[col_idx][row_idx]?.content;
+      if (
+        state.selectedBlock &&
+        updatedBlock &&
+        (state.selectedBlock as BlockItem).uuid ===
+          (updatedBlock as BlockItem).uuid
+      ) {
+        state.selectedBlock = updatedBlock as CanvasBlock;
       }
 
-      // Инициализируем columns если их нет
-      if (!columnBlock.columns) {
-        columnBlock.columns = [];
-      }
-
-      // Обновляем существующую колонку по индексу, вместо добавления новой
-      const idx = Number(columnIndex);
-      if (!isNaN(idx) && idx >= 0 && idx < columnBlock.columns.length) {
-        columnBlock.columns[idx] = {
-          ...columnBlock.columns[idx],
-          content: block.content,
+      // Обновляем ссылку в selectedGridChildData
+      if (
+        state.selectedGridChildData &&
+        state.selectedGridChildData.col_idx === col_idx &&
+        state.selectedGridChildData.row_idx === row_idx
+      ) {
+        state.selectedGridChildData = {
+          cell: updatedBlock as BlockItem,
+          col_idx,
+          row_idx,
         };
-      } else {
-        console.error("Invalid column index:", columnIndex);
       }
-    },
-
-    updateColumnChildProperties: <T extends GeneralBlockProperties>(
-      state: BlocksState,
-      action: PayloadAction<{
-        updatedProperties: Partial<T>;
-      }>
-    ) => {
-      const { updatedProperties } = action.payload;
-
-      // Найти блок колонок среди canvasBlocks по выбранному UUID
-      const columnBlock = state.canvasBlocks.find(
-        (b) => b.uuid === state.selectedColumnBlockUUID
-      ) as ColumnsBlockItem | undefined;
-
-      if (!columnBlock || !Array.isArray(columnBlock.columns)) return;
-
-      // Найти индекс и объект колонки с нужным детским uuid
-      const idx = columnBlock.columns.findIndex(
-        (c) => c.content?.uuid === state.selectedColumnChildBlockUUID
-      );
-
-      if (idx === -1) return;
-
-      const colChild = columnBlock.columns[idx];
-      if (!colChild || !colChild.content) return;
-
-      // Обновить свойства выбранного дочернего блока в колонке
-      columnBlock.columns[idx] = {
-        ...colChild,
-        content: {
-          ...colChild.content,
-          properties: {
-            ...colChild.content.properties,
-            ...updatedProperties,
-          },
-        },
-      };
-    },
-
-    // Для обновления любых других полей (кроме properties) дочернего блока в колонке
-    updateColumnChildFields: <T extends BlockItem>(
-      state: BlocksState,
-      action: PayloadAction<{
-        updatedField: Partial<T>;
-      }>
-    ) => {
-      const { updatedField } = action.payload;
-
-      // Найти блок колонок среди canvasBlocks по выбранному UUID
-      const columnBlock = state.canvasBlocks.find(
-        (b) => b.uuid === state.selectedColumnBlockUUID
-      ) as ColumnsBlockItem | undefined;
-
-      if (!columnBlock || !Array.isArray(columnBlock.columns)) return;
-
-      // Найти индекс и объект колонки с нужным детским uuid
-      const idx = columnBlock.columns.findIndex(
-        (c) => c.content?.uuid === state.selectedColumnChildBlockUUID
-      );
-
-      if (idx === -1) return;
-
-      const colChild = columnBlock.columns[idx];
-      if (!colChild || !colChild.content) return;
-
-      // Обновить поля выбранного дочернего блока в колонке (кроме properties)
-      columnBlock.columns[idx] = {
-        ...colChild,
-        content: {
-          ...colChild.content,
-          ...updatedField, // properties не трогаем, только другие поля
-          properties: colChild.content.properties,
-        },
-      };
-    },
-
-    addBlankColumn: (
-      state,
-      action: PayloadAction<{ columnBoxUUID: string }>
-    ) => {
-      const { columnBoxUUID } = action.payload;
-
-      // Находим блок колонок по UUID
-      const columnBlock = state.canvasBlocks.find(
-        (b) => b.uuid === columnBoxUUID
-      ) as (CanvasBlock & ColumnsBlockItem) | undefined;
-
-      columnBlock?.columns?.push({ content: null });
     },
   },
 });
@@ -437,18 +382,16 @@ export const {
   addBetween,
   moveBlock,
   moveBetween,
-  updateBlockProperties,
   removeBlock,
   selectBlock,
   resetCanvas,
   setGrabbingBlock,
-  updateCanvasColumnBlock,
+  updateCanvasGridBlock,
   setHoveredBlockId,
-  updateBlockField,
-  selectBlockFromColumn,
+  selectBlockFromGrid,
   setSelectedColumnUUID,
   setSelectedColumnChildUUID,
-  updateColumnChildProperties,
-  updateColumnChildFields,
+  updateGridChildBlock,
+  updateBlock,
 } = blocksSlice.actions;
 export default blocksSlice.reducer;

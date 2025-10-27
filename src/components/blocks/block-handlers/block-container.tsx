@@ -50,12 +50,12 @@ export default function BlockContainer({
 
   const handleSelectBlock = () => {
     try {
-      dispatch(selectBlock(uuid));
-      if (type === BlockTypes.columns)
+      dispatch(selectBlock({ uuid }));
+      if (type === BlockTypes.columns) {
         dispatch(setSelectedColumnUUID({ uuid }));
-      else {
+      } else {
         dispatch(setSelectedColumnUUID({ uuid: null }));
-        dispatch(setSelectedColumnChildUUID({ uuid: null }));
+        dispatch(setSelectedColumnChildUUID(null));
       }
       setIsSelected(true);
       setIsLeaved(false);
