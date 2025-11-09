@@ -29,8 +29,6 @@ export function usePropertiesPanel() {
     (newBlock: Partial<BlockItem>) => {
       if (!selectedBlock) return null;
 
-      console.log(newBlock);
-
       if (selectedGridChildData) {
         dispatch(updateGridChildBlock({ block: newBlock }));
         return;

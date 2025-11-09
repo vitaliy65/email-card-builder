@@ -69,27 +69,6 @@ export default function Borders({
             <option value="none">None</option>
           </select>
         </div>
-        <div>
-          <Label className="text-xs text-muted-foreground mb-1.5 block">
-            Display
-          </Label>
-          <select
-            className="w-full h-9 px-3 rounded-md bg-background border border-input text-sm"
-            value={properties?.display ?? "inline-block"}
-            onChange={(e) => {
-              handleSaveProperty("display", e.target.value);
-              onChange({
-                properties: { ...properties, display: e.target.value },
-              });
-            }}
-          >
-            <option value="inline-block">Inline-block</option>
-            <option value="block">Block</option>
-            <option value="inline">Inline</option>
-            <option value="flex">Flex</option>
-            <option value="none">None</option>
-          </select>
-        </div>
       </div>
     </div>
   );

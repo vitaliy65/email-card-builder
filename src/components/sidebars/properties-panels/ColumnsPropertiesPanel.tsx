@@ -21,7 +21,6 @@ function syncGridElements(
   columns: number,
   rows: number
 ) {
-  // Создаем копию или новую сетку
   let newGrid: GridElement[][] = [];
   if (Array.isArray(gridElements)) {
     newGrid = gridElements.map((col) =>
@@ -29,7 +28,6 @@ function syncGridElements(
     );
   }
 
-  // Убедимся в нужном количестве столбцов
   while (newGrid.length < columns) {
     newGrid.push(Array(rows).fill({ content: null }));
   }
@@ -38,7 +36,6 @@ function syncGridElements(
     newGrid.length = columns;
   }
 
-  // Убедимся в нужном количестве строк в каждом столбце
   for (let c = 0; c < columns; c++) {
     if (!newGrid[c]) newGrid[c] = [];
     for (let r = 0; r < rows; r++) {
@@ -46,7 +43,6 @@ function syncGridElements(
         newGrid[c][r] = { content: null };
       }
     }
-    // Обрезаем лишние строки
     if (newGrid[c].length > rows) newGrid[c].length = rows;
   }
 
@@ -57,8 +53,9 @@ export default function ColumnsPropertiesPanel({
   block,
   onChange,
 }: ColumnsPropertiesPanelProps) {
+  console.log("updated!");
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<React.CSSProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(block.properties);
 
   const [columnCount, setColumnCount] = useState(block.columnsCount ?? 1);
   const [rowsCount, setRowsCount] = useState(block.rowsCount ?? 1);
@@ -67,7 +64,13 @@ export default function ColumnsPropertiesPanel({
     setColumnCount(block.columnsCount ?? 1);
     setRowsCount(block.rowsCount ?? 1);
     setProperties(block.properties);
-  }, [block.uuid]);
+  }, [
+    block.uuid,
+    block.columnsCount,
+    block.rowsCount,
+    block.properties,
+    setProperties,
+  ]);
 
   // Обновить кол-во колонок/строк и gridElements
   const handleChangeGrid = (newColCount: number, newRowCount: number) => {
@@ -107,6 +110,7 @@ export default function ColumnsPropertiesPanel({
     const value = Number(e.target.value);
     handleChangeGrid(value, rowsCount);
   };
+
   const handleRowsCountBlur = (e: FocusEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     handleChangeGrid(columnCount, value);
@@ -167,10 +171,7 @@ export default function ColumnsPropertiesPanel({
         onChange={(cssProps) =>
           onChange({
             ...block,
-            properties: {
-              ...block.properties,
-              ...cssProps,
-            },
+            ...cssProps,
           })
         }
       />
@@ -181,10 +182,7 @@ export default function ColumnsPropertiesPanel({
         onChange={(cssProps) =>
           onChange({
             ...block,
-            properties: {
-              ...block.properties,
-              ...cssProps,
-            },
+            ...cssProps,
           })
         }
       />
@@ -195,10 +193,7 @@ export default function ColumnsPropertiesPanel({
         onChange={(cssProps) =>
           onChange({
             ...block,
-            properties: {
-              ...block.properties,
-              ...cssProps,
-            },
+            ...cssProps,
           })
         }
       />
@@ -209,10 +204,7 @@ export default function ColumnsPropertiesPanel({
         onChange={(cssProps) =>
           onChange({
             ...block,
-            properties: {
-              ...block.properties,
-              ...cssProps,
-            },
+            ...cssProps,
           })
         }
       />

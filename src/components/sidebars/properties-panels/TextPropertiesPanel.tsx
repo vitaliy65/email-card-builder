@@ -14,7 +14,7 @@ export default function TextPropertiesPanel({
   onChange,
 }: TextPropertiesPanelProps) {
   const { properties, setProperties, handleSaveProperty } =
-    useSaveProperties<React.CSSProperties>(undefined);
+    useSaveProperties<React.CSSProperties>(block.properties);
 
   useEffect(() => {
     setProperties(block.properties);
