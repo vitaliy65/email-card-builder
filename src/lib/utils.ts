@@ -4,7 +4,9 @@ import { BlockItem, BlockTypes, GridElement } from "@/types/block";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
-
+/**
+ * Merge classes using tailwind-merge and clsx.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -13,6 +15,7 @@ export function ensurePx(value: string) {
   if (typeof value !== "string") return "";
   const trimmed = value.trim();
   if (!trimmed) return "";
+  // extend for all common email units
   if (
     trimmed.endsWith("px") ||
     trimmed.endsWith("%") ||
@@ -20,14 +23,13 @@ export function ensurePx(value: string) {
     trimmed.endsWith("rem") ||
     trimmed.endsWith("vw") ||
     trimmed.endsWith("vh") ||
-    trimmed === "auto"
+    trimmed.endsWith("auto")
   ) {
     return trimmed;
   }
   return `${trimmed}px`;
 }
 
-// getCellContent адаптированная версия для gridElements (types/block.ts)
 export function getCellContent({
   gridElements = [],
   rowIdx,

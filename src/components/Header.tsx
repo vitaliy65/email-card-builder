@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Download, Save, Eye, Code, Undo, Redo, Settings } from "lucide-react";
+import { Save, Eye, Code, Undo, Redo, Settings } from "lucide-react";
+import DownloadHTMLButton from "./header/DownloadHTMLButton";
 
 export function Header() {
   return (
@@ -43,13 +44,7 @@ export function Header() {
           <Save className="h-4 w-4 mr-2" />
           Save
         </Button>
-        <Button
-          size="sm"
-          className="h-8 bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export HTML
-        </Button>
+        <DownloadHTMLButton />
       </div>
     </header>
   );

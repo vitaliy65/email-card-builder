@@ -125,7 +125,7 @@ export default function BlockContainer({
       <Tooltip>
         <TooltipTrigger asChild>
           <div>
-            <div className="min-h-[32px]">{children}</div>
+            <div className="min-h-[32px] mb-2">{children}</div>
             <div
               className="absolute inset-0"
               onMouseEnter={() => {

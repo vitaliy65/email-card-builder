@@ -10,12 +10,14 @@ export default function TextBlock({
   props?: BlockItem;
 }) {
   return (
-    <div
-      style={{
-        ...props.properties,
-      }}
-    >
-      {props.properties?.content}
-    </div>
+    <>
+      <div
+        style={{
+          ...props.properties,
+        }}
+      >
+        {props.properties?.content}
+      </div>
+    </>
   );
 }
